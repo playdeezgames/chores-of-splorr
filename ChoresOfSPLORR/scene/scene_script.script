@@ -6,9 +6,13 @@ local avatar = require("world.avatar")
 local character = require("world.character")
 local character_type = require("world.character_type")
 local actions = require("game.actions")
+local item = require("world.item")
+local item_type = require("world.item_type")
+
 local TILEMAP_URL = "/scene#scene"
 local TERRAIN_LAYER = "Terrain"
 local CHARACTER_LAYER = "Character"
+local ITEM_LAYER = "Item"
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -26,6 +30,7 @@ function update(self, dt)
 			local terrain_id = room.get_terrain(room_id, column, row)
 			local tile = terrain.get_tile(terrain_id)
 			tilemap.set_tile(TILEMAP_URL, TERRAIN_LAYER, column, row, tile)
+
 			local character_id = room.get_character(room_id, column, row)
 			tile = 0
 			if character_id ~= nil then
@@ -33,25 +38,29 @@ function update(self, dt)
 				tile = character_type.get_tile(character_type_id)
 			end
 			tilemap.set_tile(TILEMAP_URL, CHARACTER_LAYER, column, row, tile)
+
+			local item_id = room.get_item(room_id, column, row)
+			tile = 0
+			if item_id ~= nil then
+				local item_type_id = item.get_item_type(item_id)
+				tile = item_type.get_tile(item_type_id)
+			end
+			tilemap.set_tile(TILEMAP_URL, ITEM_LAYER, column, row, tile)
 		end
 	end
 end
-
 
 function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
-	if action_id == hash(actions.UP) then
-		pprint(action)
-	end
-	if action_id == hash(actions.UP) then
+	if action_id == hash(actions.UP) and (action.pressed or action.repeated) then
 		avatar.move_up()
-	elseif action_id == hash(actions.RIGHT) and action.pressed then
+	elseif action_id == hash(actions.RIGHT) and (action.pressed or action.repeated) then
 		avatar.move_right()
-	elseif action_id == hash(actions.DOWN) and action.pressed then
+	elseif action_id == hash(actions.DOWN) and (action.pressed or action.repeated) then
 		avatar.move_down()
-	elseif action_id == hash(actions.LEFT) and action.pressed then
+	elseif action_id == hash(actions.LEFT) and (action.pressed or action.repeated) then
 		avatar.move_left()
 	end
 end

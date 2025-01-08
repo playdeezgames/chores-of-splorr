@@ -38,4 +38,12 @@ function M.get_character(room_id, column, row)
 	local room_data = data[room_id]
 	return room_data[column][row].character_id
 end
+function M.set_item(room_id, column, row, item_id)
+	local room_data = data[room_id]
+	room_data[column][row].item_id = item_id
+end
+function M.get_item(room_id, column, row)
+	local room_data = data[room_id]
+	return room_data[column][row].item_id
+end
 return M
