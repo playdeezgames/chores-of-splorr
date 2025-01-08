@@ -5,11 +5,13 @@ local terrain = require("world.terrain")
 local avatar = require("world.avatar")
 local character = require("world.character")
 local character_type = require("world.character_type")
+local actions = require("game.actions")
 local TILEMAP_URL = "/scene#scene"
 local TERRAIN_LAYER = "Terrain"
 local CHARACTER_LAYER = "Character"
 
 function init(self)
+	msg.post(".", "acquire_input_focus")
 	initializer.initialize()
 end
 
@@ -40,4 +42,16 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
+	if action_id == hash(actions.UP) then
+		pprint(action)
+	end
+	if action_id == hash(actions.UP) then
+		avatar.move_up()
+	elseif action_id == hash(actions.RIGHT) and action.pressed then
+		avatar.move_right()
+	elseif action_id == hash(actions.DOWN) and action.pressed then
+		avatar.move_down()
+	elseif action_id == hash(actions.LEFT) and action.pressed then
+		avatar.move_left()
+	end
 end
