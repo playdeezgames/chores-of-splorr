@@ -6,6 +6,7 @@ local character_type = require("world.character_type")
 local avatar = require("world.avatar")
 local item = require("world.item")
 local item_type = require("world.item_type")
+local lock_type = require("world.lock_type")
 
 local M = {}
 
@@ -20,6 +21,10 @@ local function initialize_starting_room()
 			room.set_terrain(room_id, column, row, terrain_id)
 		end
 	end
+
+	local exit_column, exit_row = grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y
+	room.set_terrain(room_id, exit_column, exit_row, terrain.CLOSED_DOOR)
+	room.set_lock_type(room_id, exit_column, exit_row, lock_type.COMMON)
 
 	local item_id = item.create(item_type.KEY)
 	room.set_item(room_id, 2, 2, item_id)

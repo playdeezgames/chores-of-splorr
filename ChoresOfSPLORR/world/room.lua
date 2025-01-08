@@ -46,4 +46,12 @@ function M.get_item(room_id, column, row)
 	local room_data = data[room_id]
 	return room_data[column][row].item_id
 end
+function M.set_lock_type(room_id, column, row, lock_type_id)
+	local room_data = data[room_id]
+	room_data[column][row].lock_type_id = lock_type_id
+end
+function M.get_lock_type(room_id, column, row)
+	local room_data = data[room_id]
+	return room_data[column][row].lock_type_id
+end
 return M

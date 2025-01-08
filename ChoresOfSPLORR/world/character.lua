@@ -1,3 +1,4 @@
+local item = require "world.item"
 local M = {}
 local data = {}
 function M.create(character_type_id)
@@ -30,5 +31,14 @@ end
 function M.get_inventory(character_id, index)
     local character_data = data[character_id]
     return character_data.inventory[index]
+end
+function M.has_item_type(character_id, item_type_id)
+    local character_data = data[character_id]
+    for _, item_id in ipairs(character_data.inventory) do
+        if item.get_item_type(item_id) == item_type_id then
+            return true
+        end
+    end
+    return false
 end
 return M
