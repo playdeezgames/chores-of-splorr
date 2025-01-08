@@ -10,3 +10,11 @@ components {
   id: "scene_script"
   component: "/scene/scene_script.script"
 }
+components {
+  id: "inventory"
+  component: "/scene/inventory.tilemap"
+  position {
+    x: 21.0
+    y: 10.0
+  }
+}
