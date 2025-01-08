@@ -1,0 +1,49 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "home.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "cos.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 3,
+            "scaleInEditor": 4
+        },
+        "home.tmx": {
+            "scale": 2.8246666666666664,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 150.10620722209111,
+                "y": 150.10620722209111
+            }
+        }
+    },
+    "last.exportedFilePath": "E:/GIT/chores-of-splorr/ChoresOfSPLORR/rooms",
+    "last.imagePath": "E:/GIT/chores-of-splorr/tiled",
+    "map.height": 25,
+    "map.lastUsedExportFilter": "Lua files (*.lua)",
+    "map.lastUsedFormat": "tmx",
+    "map.renderOrder": "1",
+    "map.tileHeight": 12,
+    "map.tileWidth": 12,
+    "map.width": 25,
+    "openFiles": [
+        "cos.tsx",
+        "home.tmx"
+    ],
+    "project": "cos.tiled-project",
+    "recentFiles": [
+        "cos.tsx",
+        "home.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 12,
+        "width": 12
+    },
+    "tileset.type": 0
+}

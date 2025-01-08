@@ -1,0 +1,10 @@
+name: "main"
+instances {
+  id: "scene"
+  prototype: "/scene/scene.go"
+  scale3 {
+    x: 2.0
+    y: 2.0
+  }
+}
+scale_along_z: 0

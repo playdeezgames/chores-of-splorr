@@ -1,0 +1,43 @@
+local grimoire = require("game.grimoire")
+local initializer = require("world.initializer")
+local room = require("world.room")
+local terrain = require("world.terrain")
+local avatar = require("world.avatar")
+local character = require("world.character")
+local character_type = require("world.character_type")
+local TILEMAP_URL = "/scene#scene"
+local TERRAIN_LAYER = "Terrain"
+local CHARACTER_LAYER = "Character"
+
+function init(self)
+	initializer.initialize()
+end
+
+function final(self)
+end
+
+function update(self, dt)
+	local avatar_character_id = avatar.get_character()
+	local room_id = character.get_room(avatar_character_id)
+	for column= 1, grimoire.BOARD_COLUMNS do
+		for row = 1, grimoire.BOARD_ROWS do
+			local terrain_id = room.get_terrain(room_id, column, row)
+			local tile = terrain.get_tile(terrain_id)
+			tilemap.set_tile(TILEMAP_URL, TERRAIN_LAYER, column, row, tile)
+			local character_id = room.get_character(room_id, column, row)
+			tile = 0
+			if character_id ~= nil then
+				local character_type_id = character.get_character_type(character_id)
+				tile = character_type.get_tile(character_type_id)
+			end
+			tilemap.set_tile(TILEMAP_URL, CHARACTER_LAYER, column, row, tile)
+		end
+	end
+end
+
+
+function on_message(self, message_id, message, sender)
+end
+
+function on_input(self, action_id, action)
+end
