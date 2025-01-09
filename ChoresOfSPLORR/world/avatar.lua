@@ -50,6 +50,13 @@ local function move_avatar(delta_column, delta_row)
         end
     end
 
+    local teleport_room_id, teleport_column, teleport_row = room.get_teleport(next_room_id, next_column, next_row)
+    if teleport_room_id ~= nil then
+        next_room_id = teleport_room_id
+        next_column = teleport_column
+        next_row = teleport_row
+    end
+
     --TODO: step sfx
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)

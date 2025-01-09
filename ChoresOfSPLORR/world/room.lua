@@ -54,4 +54,19 @@ function M.get_lock_type(room_id, column, row)
 	local room_data = data[room_id]
 	return room_data[column][row].lock_type_id
 end
+function M.set_teleport(room_id, column, row, to_room_id, to_column,  to_row)
+	local room_data = data[room_id]
+	room_data[column][row].teleport = {
+		room_id = to_room_id,
+		column = to_column,
+		row = to_row
+	}
+end
+function M.get_teleport(room_id, column, row)
+	local room_data = data[room_id]
+	local teleport_data = room_data[column][row].teleport
+	if teleport_data ~= nil then
+		return teleport_data.room_id, teleport_data.column, teleport_data.row
+	end
+end
 return M

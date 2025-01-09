@@ -36,8 +36,26 @@ local function initialize_starting_room()
 	return room_id, character_id
 end
 
+local function initialize_second_room(starting_room_id)
+	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
+	for column = 1, grimoire.BOARD_COLUMNS do
+		for row = 1, grimoire.BOARD_ROWS do
+			local terrain_id = terrain.FLOOR
+			if column == 1 or row == 1 or column == grimoire.BOARD_COLUMNS or row == grimoire.BOARD_ROWS then
+				terrain_id = terrain.WALL
+			end
+			room.set_terrain(room_id, column, row, terrain_id)
+		end
+	end
+	room.set_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.OPEN_DOOR)
+	room.set_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
+	room.set_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
+	return room_id
+end
+
 function M.initialize()
-	local room_id, character_id = initialize_starting_room()
+	local starting_room_id, avatar_character_id = initialize_starting_room()
+	initialize_second_room(starting_room_id)
 end
 
 return M
