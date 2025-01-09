@@ -41,4 +41,28 @@ function M.has_item_type(character_id, item_type_id)
     end
     return false
 end
+function M.find_item_of_type(character_id, item_type_id)
+    local character_data = data[character_id]
+    for _, item_id in ipairs(character_data.inventory) do
+        if item.get_item_type(item_id) == item_type_id then
+            return item_id
+        end
+    end
+    return nil
+end
+function M.remove_item(character_id, item_id)
+    local character_data = data[character_id]
+    local new_inventory = {}
+    for _, candidate_item_id in ipairs(character_data.inventory) do
+        if candidate_item_id ~= item_id then
+            table.insert(new_inventory, candidate_item_id)
+        end
+    end
+    character_data.inventory = new_inventory
+end
+function M.remove_item_of_type(character_id, item_type_id)
+    local item_id = M.find_item_of_type(character_id, item_type_id)
+    if item_id == nil then return end
+    M.remove_item(character_id, item_id)
+end
 return M

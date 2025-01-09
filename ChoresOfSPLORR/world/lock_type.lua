@@ -1,5 +1,6 @@
 local terrain = require("world.terrain")
 local item_type = require("world.item_type")
+local sfx       = require("game.sfx")
 local M = {}
 M.COMMON = "COMMON"
 local descriptors = {
@@ -7,7 +8,9 @@ local descriptors = {
         key_item_type_id = item_type.KEY,
         destroys_key = true,
         destroys_lock = true,
-        to_terrain_id = terrain.OPEN_DOOR
+        to_terrain_id = terrain.OPEN_DOOR,
+        fail_sfx_id = sfx.LOCKED,
+        success_sfx_id = sfx.UNLOCK
     }
 }
 function M.get_key_item_type_id(lock_type_id)
@@ -21,5 +24,11 @@ function M.destroys_lock(lock_type_id)
 end
 function M.to_terrain_id(lock_type_id)
     return descriptors[lock_type_id].to_terrain_id
+end
+function M.get_fail_sfx(lock_type_id)
+    return descriptors[lock_type_id].fail_sfx_id
+end
+function M.get_success_sfx(lock_type_id)
+    return descriptors[lock_type_id].success_sfx_id
 end
 return M

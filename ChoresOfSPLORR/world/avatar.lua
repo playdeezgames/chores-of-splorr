@@ -21,13 +21,17 @@ local function move_avatar(delta_column, delta_row)
         if lock_type_id ~= nil then
             local key_item_type_id = lock_type.get_key_item_type_id(lock_type_id)
             if not character.has_item_type(character_id, key_item_type_id) then
-                --TODO: fail SFX
+                sfx.trigger(lock_type.get_fail_sfx(lock_type_id))
                 return
             else
-                --TODO: destroy key if supposed to
-                --TODO: change terrain
-                --TODO: destroy lock if supposed to
-                --TODO: succeeed SFX
+                if lock_type.destroys_key(lock_type_id) then
+                    character.remove_item_of_type(character_id, key_item_type_id)
+                end
+                room.set_terrain(next_room_id, next_column, next_row, lock_type.to_terrain_id(lock_type_id))
+                if lock_type.destroys_lock(lock_type_id) then
+                    room.set_lock_type(next_room_id, next_column, next_row, nil)
+                end
+                sfx.trigger(lock_type.get_success_sfx(lock_type_id))
                 return
             end
         end
@@ -46,6 +50,7 @@ local function move_avatar(delta_column, delta_row)
         end
     end
 
+    --TODO: step sfx
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)
 end
