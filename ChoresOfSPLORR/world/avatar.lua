@@ -4,6 +4,7 @@ local terrain = require("world.terrain")
 local item = require("world.item")
 local item_type = require("world.item_type")
 local lock_type = require("world.lock_type")
+local sfx = require("game.sfx")
 local M = {}
 local data = {}
 local function move_avatar(delta_column, delta_row)
@@ -38,7 +39,7 @@ local function move_avatar(delta_column, delta_row)
     if item_id ~= nil then
         local item_type_id = item.get_item_type(item_id)
         if item_type.can_pick_up(item_type_id) then
-            --TODO: pick up sfx
+            sfx.trigger(item_type.get_pickup_sfx(item_type_id))
             room.set_item(next_room_id, next_column, next_row, nil)
             character.add_item(character_id, item_id)
             return
