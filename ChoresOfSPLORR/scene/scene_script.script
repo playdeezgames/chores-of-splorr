@@ -8,12 +8,15 @@ local character_type = require("world.character_type")
 local actions = require("game.actions")
 local item = require("world.item")
 local item_type = require("world.item_type")
+local feature   = require("world.feature")
+local feature_type = require("world.feature_type")
 
 local TILEMAP_URL = "/scene#scene"
 local INVENTORY_URL = "/scene#inventory"
 local TERRAIN_LAYER = "Terrain"
 local CHARACTER_LAYER = "Character"
 local ITEM_LAYER = "Item"
+local FEATURE_LAYER = "Feature"
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -39,6 +42,14 @@ local function update_scene()
 				tile = character_type.get_tile(character_type_id)
 			end
 			tilemap.set_tile(TILEMAP_URL, CHARACTER_LAYER, column, row, tile)
+
+			local feature_id = room.get_feature(room_id, column, row)
+			tile = 0
+			if feature_id ~= nil then
+				local feature_type_id = feature.get_feature_type(feature_id)
+				tile = feature_type.get_tile(feature_type_id)
+			end
+			tilemap.set_tile(TILEMAP_URL, FEATURE_LAYER, column, row, tile)
 
 			local item_id = room.get_item(room_id, column, row)
 			tile = 0

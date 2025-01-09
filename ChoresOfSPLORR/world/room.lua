@@ -69,4 +69,12 @@ function M.get_teleport(room_id, column, row)
 		return teleport_data.room_id, teleport_data.column, teleport_data.row
 	end
 end
+function M.set_feature(room_id, column, row, feature_id)
+	local room_data = data[room_id]
+	room_data[column][row].feature_id = feature_id
+end
+function M.get_feature(room_id, column, row)
+	local room_data = data[room_id]
+	return room_data[column][row].feature_id
+end
 return M

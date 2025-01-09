@@ -18,11 +18,11 @@ layers {
   z: 0.1
 }
 layers {
-  id: "Character"
+  id: "Feature"
   z: 0.2
 }
 layers {
-  id: "Effect"
+  id: "Character"
   z: 0.3
 }
 material: "/builtins/materials/tile_map.material"
