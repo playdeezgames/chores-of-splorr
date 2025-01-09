@@ -19,7 +19,7 @@ local function move_avatar(delta_column, delta_row)
         local lock_type_id = room.get_lock_type(next_room_id, next_column, next_row)
         if lock_type_id ~= nil then
             local key_item_type_id = lock_type.get_key_item_type_id(lock_type_id)
-            if not character.has_item_type(key_item_type_id) then
+            if not character.has_item_type(character_id, key_item_type_id) then
                 --TODO: fail SFX
                 return
             else
