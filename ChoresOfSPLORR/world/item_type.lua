@@ -1,9 +1,15 @@
 local sfx = require("game.sfx")
 local M = {}
 M.KEY = "KEY"
+M.BROOM = "BROOM"
 local descriptors = {
     [M.KEY] = {
         tile = 4,
+        carryable = true,
+        pickup_sfx_id = sfx.PICK_UP
+    },
+    [M.BROOM] = {
+        tile = 8,
         carryable = true,
         pickup_sfx_id = sfx.PICK_UP
     }

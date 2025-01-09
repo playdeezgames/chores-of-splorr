@@ -10,6 +10,12 @@ local lock_type = require("world.lock_type")
 
 local M = {}
 
+local function create_room_item(room_id, column, row, item_type_id)
+	local item_id = item.create(item_type_id)
+	room.set_item(room_id, column, row, item_id)
+	return item_id
+end
+
 local function initialize_starting_room()
 	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
 	for column = 1, grimoire.BOARD_COLUMNS do
@@ -26,8 +32,8 @@ local function initialize_starting_room()
 	room.set_terrain(room_id, exit_column, exit_row, terrain.CLOSED_DOOR)
 	room.set_lock_type(room_id, exit_column, exit_row, lock_type.COMMON)
 
-	local item_id = item.create(item_type.KEY)
-	room.set_item(room_id, 2, 2, item_id)
+	create_room_item(room_id, 2, 2, item_type.KEY)
+	create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
 	
 	local character_id = character.create(character_type.HERO)
 	room.set_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
