@@ -50,6 +50,19 @@ local function move_avatar(delta_column, delta_row)
         end
     end
 
+    local feature_id = room.get_feature(next_room_id, next_column, next_row)
+    if feature_id ~= nil then
+        if not character.can_interact(character_id, feature_id) then
+            --TODO: get feature type
+            --TODO: play feature type interaction failure sfx
+            return
+        end
+        character.interact(character_id, feature_id)
+        --TODO: get feature type
+        --TODO: play feature type interaction success sfx
+        return
+    end
+
     local teleport_room_id, teleport_column, teleport_row = room.get_teleport(next_room_id, next_column, next_row)
     if teleport_room_id ~= nil then
         next_room_id = teleport_room_id

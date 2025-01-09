@@ -65,4 +65,11 @@ function M.remove_item_of_type(character_id, item_type_id)
     if item_id == nil then return end
     M.remove_item(character_id, item_id)
 end
+function M.can_interact(character_id, feature_id)
+    --TODO: figure this out
+    return false
+end
+function M.interact(character_id, feature_id)
+    --TODO: figure this out
+end
 return M

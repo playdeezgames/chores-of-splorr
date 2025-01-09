@@ -11,4 +11,11 @@ function M.get_feature_type(feature_id)
     local feature_data = data[feature_id]
     return feature_data.feature_type_id
 end
+function M.set_statistic(feature_id, statistic_type_id, statistic_value)
+    local feature_data = data[feature_id]
+    if feature_data.statistics == nil then
+        feature_data.statistics = {}
+    end
+    feature_data.statistics[statistic_type_id] = statistic_value
+end
 return M

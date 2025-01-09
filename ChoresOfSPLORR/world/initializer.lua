@@ -9,6 +9,7 @@ local item_type = require("world.item_type")
 local lock_type = require("world.lock_type")
 local feature_type = require("world.feature_type")
 local feature = require("world.feature")
+local statistic_type = require("world.statistic_type")
 
 local M = {}
 
@@ -43,7 +44,8 @@ local function initialize_starting_room()
 	create_room_item(room_id, 2, 2, item_type.KEY)
 	create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
 
-	create_room_feature(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y - 1, feature_type.DIRT_PILE)
+	local feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y - 1, feature_type.DIRT_PILE)
+	feature.set_statistic(feature_id, statistic_type.INTENSITY, 1)
 	
 	local character_id = character.create(character_type.HERO)
 	room.set_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
