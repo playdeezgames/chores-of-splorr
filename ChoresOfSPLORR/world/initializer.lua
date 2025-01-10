@@ -45,8 +45,10 @@ local function initialize_starting_room()
 	create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
 
 	local feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y - 1, feature_type.DIRT_PILE)
-	feature.set_statistic(feature_id, statistic_type.INTENSITY, 1)
-	
+	--feature.set_statistic(feature_id, statistic_type.INTENSITY, 1)
+
+	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)	
+
 	local character_id = character.create(character_type.HERO)
 	room.set_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
 	avatar.set_character(character_id)

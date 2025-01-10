@@ -2,10 +2,16 @@ local sfx = require("game.sfx")
 local M = {}
 
 M.DIRT_PILE = "DIRT_PILE"
+M.DUST_BIN = "DUST_BIN"
 
 local descriptors = {
     [M.DIRT_PILE] = {
         tile = 7,
+        failure_sfx=sfx.LOCKED,
+        success_sfx=sfx.UNLOCK
+    },
+    [M.DUST_BIN] = {
+        tile = 9,
         failure_sfx=sfx.LOCKED,
         success_sfx=sfx.UNLOCK
     }

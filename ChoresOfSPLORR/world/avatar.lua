@@ -21,13 +21,22 @@ feature_type.set_can_interact(
         if terrain_id ~= terrain.FLOOR then
             return false
         end
-        return room.get_feature(context.room_id, next_column, next_row) == nil
+        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
+        if next_feature_id == nil then
+            return true
+        end
+        local next_feature_type_id = feature.get_feature_type(next_feature_id)
+        return next_feature_type_id == feature_type.DUST_BIN
     end)
 feature_type.set_interact(
     feature_type.DIRT_PILE, 
     function(feature_id, _, context)
         room.set_feature(context.room_id, context.column, context.row, nil)
-        room.set_feature(context.room_id, context.column + context.delta_column, context.row + context.delta_row, feature_id)
+        local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
+        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
+        if next_feature_id == nil then
+            room.set_feature(context.room_id, next_column, next_row , feature_id)
+        end
     end)
 
 local function move_avatar(delta_column, delta_row)
