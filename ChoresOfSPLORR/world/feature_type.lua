@@ -1,10 +1,13 @@
+local sfx = require("game.sfx")
 local M = {}
 
 M.DIRT_PILE = "DIRT_PILE"
 
 local descriptors = {
     [M.DIRT_PILE] = {
-        tile = 7
+        tile = 7,
+        failure_sfx=sfx.LOCKED,
+        success_sfx=sfx.UNLOCK
     }
 }
 function M.get_tile(feature_type_id)

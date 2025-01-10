@@ -58,7 +58,7 @@ local function move_avatar(delta_column, delta_row)
                 return
             end
         end
-        --TODO: bump sfx
+        sfx.trigger(terrain.get_bump_sfx(terrain_id))
         return
     end
 
@@ -92,7 +92,7 @@ local function move_avatar(delta_column, delta_row)
         next_row = teleport_row
     end
 
-    --TODO: step sfx
+    sfx.trigger(terrain.get_step_sfx(terrain_id))
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)
 end

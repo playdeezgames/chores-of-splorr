@@ -10,6 +10,6 @@ function M.trigger(sfx_id)
     if sfx_id == nil then
         return
     end
-    sound.play("/audio#"..sfx_id)
+    sound.play("/audio#"..sfx_id, {speed = 0.9 + math.random() * 0.2})
 end
 return M

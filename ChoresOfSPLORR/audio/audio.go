@@ -10,3 +10,7 @@ components {
   id: "UNLOCK"
   component: "/assets/sfx/UNLOCK.wav"
 }
+components {
+  id: "STEP"
+  component: "/assets/sfx/STEP.wav"
+}
