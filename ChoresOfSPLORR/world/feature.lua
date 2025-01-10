@@ -1,3 +1,4 @@
+local feature_type = require "world.feature_type"
 local M = {}
 local data = {}
 function M.create(feature_type_id)
@@ -17,5 +18,28 @@ function M.set_statistic(feature_id, statistic_type_id, statistic_value)
         feature_data.statistics = {}
     end
     feature_data.statistics[statistic_type_id] = statistic_value
+end
+function M.can_interact(feature_id, character_id, context)
+    local feature_type_id = M.get_feature_type(feature_id)
+    local callback = feature_type.get_can_interact(feature_type_id)
+    if callback ~= nil then
+        return callback(feature_id, character_id, context)
+    end
+    return false
+end
+function M.interact(feature_id, character_id, context)
+    local feature_type_id = M.get_feature_type(feature_id)
+    local callback = feature_type.get_interact(feature_type_id)
+    if callback ~= nil then
+        callback(feature_id, character_id, context)
+    end
+end
+function M.get_failure_sfx(feature_id)
+    local feature_type_id = M.get_feature_type(feature_id)
+    return feature_type.get_failure_sfx(feature_type_id)
+end
+function M.get_success_sfx(feature_id)
+    local feature_type_id = M.get_feature_type(feature_id)
+    return feature_type.get_success_sfx(feature_type_id)
 end
 return M

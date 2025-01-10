@@ -5,8 +5,31 @@ local item = require("world.item")
 local item_type = require("world.item_type")
 local lock_type = require("world.lock_type")
 local sfx = require("game.sfx")
+local feature = require("world.feature")
+local feature_type = require("world.feature_type")
 local M = {}
 local data = {}
+
+feature_type.set_can_interact(
+    feature_type.DIRT_PILE, 
+    function(_, character_id, context)
+        if not character.has_item_type(character_id, item_type.BROOM) then
+            return false
+        end
+        local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
+        local terrain_id = room.get_terrain(context.room_id, next_column, next_row)
+        if terrain_id ~= terrain.FLOOR then
+            return false
+        end
+        return room.get_feature(context.room_id, next_column, next_row) == nil
+    end)
+feature_type.set_interact(
+    feature_type.DIRT_PILE, 
+    function(feature_id, _, context)
+        room.set_feature(context.room_id, context.column, context.row, nil)
+        room.set_feature(context.room_id, context.column + context.delta_column, context.row + context.delta_row, feature_id)
+    end)
+
 local function move_avatar(delta_column, delta_row)
     local character_id = M.get_character()
     local room_id, column, row = character.get_room(character_id)
@@ -52,14 +75,13 @@ local function move_avatar(delta_column, delta_row)
 
     local feature_id = room.get_feature(next_room_id, next_column, next_row)
     if feature_id ~= nil then
-        if not character.can_interact(character_id, feature_id) then
-            --TODO: get feature type
-            --TODO: play feature type interaction failure sfx
+        local context = {room_id=next_room_id, column=next_column, row=next_row, delta_column = delta_column, delta_row=delta_row}
+        if not feature.can_interact(feature_id, character_id, context) then
+            sfx.trigger(feature.get_failure_sfx(feature_id))
             return
         end
-        character.interact(character_id, feature_id)
-        --TODO: get feature type
-        --TODO: play feature type interaction success sfx
+        feature.interact(feature_id, character_id, context)
+        sfx.trigger(feature.get_success_sfx(feature_id))
         return
     end
 
