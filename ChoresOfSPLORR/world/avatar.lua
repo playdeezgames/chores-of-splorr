@@ -7,6 +7,7 @@ local lock_type = require("world.lock_type")
 local sfx = require("game.sfx")
 local feature = require("world.feature")
 local feature_type = require("world.feature_type")
+local statistic_type = require("world.statistic_type")
 local M = {}
 local data = {}
 
@@ -26,7 +27,7 @@ feature_type.set_can_interact(
             return true
         end
         local next_feature_type_id = feature.get_feature_type(next_feature_id)
-        return next_feature_type_id == feature_type.DUST_BIN
+        return next_feature_type_id == feature_type.DUST_BIN or next_feature_type_id == feature_type.DIRT_PILE
     end)
 feature_type.set_interact(
     feature_type.DIRT_PILE, 
@@ -36,16 +37,25 @@ feature_type.set_interact(
         local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
         if next_feature_id == nil then
             room.set_feature(context.room_id, next_column, next_row , feature_id)
+        else
+            local next_feature_type_id = feature.get_feature_type(next_feature_id)
+            if next_feature_type_id == feature_type.DIRT_PILE then
+                local total_intensity = feature.get_statistic(next_feature_id, statistic_type.INTENSITY) + feature.get_statistic(feature_id, statistic_type.INTENSITY)
+                feature.set_statistic(next_feature_id, statistic_type.INTENSITY, total_intensity)
+            end
         end
     end)
 
-local function move_avatar(delta_column, delta_row)
+local function move_avatar(delta_column, delta_row, pull)
     local character_id = M.get_character()
     local room_id, column, row = character.get_room(character_id)
 
     local next_room_id = room_id
     local next_column = column + delta_column
     local next_row = row + delta_row
+    local prev_room_id = room_id
+    local prev_column = column - delta_column
+    local prev_row = row - delta_row
 
     local terrain_id = room.get_terrain(next_room_id, next_column, next_row)
     if not terrain.is_passable(terrain_id) then
@@ -82,16 +92,24 @@ local function move_avatar(delta_column, delta_row)
         end
     end
 
-    local feature_id = room.get_feature(next_room_id, next_column, next_row)
-    if feature_id ~= nil then
-        local context = {room_id=next_room_id, column=next_column, row=next_row, delta_column = delta_column, delta_row=delta_row}
-        if not feature.can_interact(feature_id, character_id, context) then
-            sfx.trigger(feature.get_failure_sfx(feature_id))
+    if pull then
+        local next_feature_id = room.get_feature(next_room_id, next_column, next_row)
+        if next_feature_id ~= nil then
+            sfx.trigger(feature.get_failure_sfx(next_feature_id))
             return
         end
-        feature.interact(feature_id, character_id, context)
-        sfx.trigger(feature.get_success_sfx(feature_id))
-        return
+    else
+        local feature_id = room.get_feature(next_room_id, next_column, next_row)
+        if feature_id ~= nil then
+            local context = {room_id=next_room_id, column=next_column, row=next_row, delta_column = delta_column, delta_row=delta_row}
+            if not feature.can_interact(feature_id, character_id, context) then
+                sfx.trigger(feature.get_failure_sfx(feature_id))
+                return
+            end
+            feature.interact(feature_id, character_id, context)
+            sfx.trigger(feature.get_success_sfx(feature_id))
+            return
+        end
     end
 
     local teleport_room_id, teleport_column, teleport_row = room.get_teleport(next_room_id, next_column, next_row)
@@ -104,6 +122,20 @@ local function move_avatar(delta_column, delta_row)
     sfx.trigger(terrain.get_step_sfx(terrain_id))
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)
+    --TODO: pulling!
+    if pull then
+        local feature_id = room.get_feature(prev_room_id, prev_column, prev_row)
+        if feature_id ~= nil then
+            local context = {room_id=prev_room_id, column=prev_column, row=prev_row, delta_column = delta_column, delta_row=delta_row}
+            if not feature.can_interact(feature_id, character_id, context) then
+                sfx.trigger(feature.get_failure_sfx(feature_id))
+                return
+            end
+            feature.interact(feature_id, character_id, context)
+            sfx.trigger(feature.get_success_sfx(feature_id))
+            return
+        end
+    end
 end
 function M.set_character(character_id)
     data.character_id = character_id
@@ -111,16 +143,16 @@ end
 function M.get_character()
     return data.character_id
 end
-function M.move_up()
-    move_avatar(0, 1)
+function M.move_up(pull)
+    move_avatar(0, 1, pull)
 end
-function M.move_right()
-    move_avatar(1, 0)
+function M.move_right(pull)
+    move_avatar(1, 0, pull)
 end
-function M.move_down()
-    move_avatar(0, -1)
+function M.move_down(pull)
+    move_avatar(0, -1, pull)
 end
-function M.move_left()
-    move_avatar(-1, 0)
+function M.move_left(pull)
+    move_avatar(-1, 0, pull)
 end
 return M

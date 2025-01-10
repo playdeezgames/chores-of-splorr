@@ -14,6 +14,10 @@ key_trigger {
   input: KEY_DOWN
   action: "DOWN"
 }
+key_trigger {
+  input: KEY_LSHIFT
+  action: "SHIFT"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

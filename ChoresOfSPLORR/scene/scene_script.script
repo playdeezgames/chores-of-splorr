@@ -18,6 +18,8 @@ local CHARACTER_LAYER = "Character"
 local ITEM_LAYER = "Item"
 local FEATURE_LAYER = "Feature"
 
+local shifted = false
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	initializer.initialize()
@@ -88,12 +90,18 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash(actions.UP) and (action.pressed or action.repeated) then
-		avatar.move_up()
+		avatar.move_up(shifted)
 	elseif action_id == hash(actions.RIGHT) and (action.pressed or action.repeated) then
-		avatar.move_right()
+		avatar.move_right(shifted)
 	elseif action_id == hash(actions.DOWN) and (action.pressed or action.repeated) then
-		avatar.move_down()
+		avatar.move_down(shifted)
 	elseif action_id == hash(actions.LEFT) and (action.pressed or action.repeated) then
-		avatar.move_left()
+		avatar.move_left(shifted)
+	elseif action_id == hash(actions.SHIFT) then
+		if action.pressed then
+			shifted = true
+		elseif action.released then
+			shifted = false
+		end
 	end
 end

@@ -15,6 +15,14 @@ function M.create(columns, rows)
 	table.insert(data, room_data)
 	return room_id
 end
+function M.get_columns(room_id)
+	local room_data = data[room_id]
+	return #room_data
+end
+function M.get_rows(room_id)
+	local room_data = data[room_id]
+	return #(room_data[1])
+end
 function M.set_terrain(room_id, column, row, terrain_id)
 	local room_data = data[room_id]
 	room_data[column][row].terrain_id = terrain_id
