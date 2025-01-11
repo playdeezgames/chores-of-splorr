@@ -56,4 +56,11 @@ function M.set_metadata(feature_id, metadata_type_id, metadata_value)
     end
     feature_data.metadatas[metadata_type_id] = metadata_value
 end
+function M.get_metadata(feature_id, metadata_type_id)
+    local feature_data = data[feature_id]
+    if feature_data.metadatas == nil then
+        return nil
+    end
+    return feature_data.metadatas[metadata_type_id]
+end
 return M

@@ -1,4 +1,8 @@
 script: "/UI/gui_script.gui_script"
+textures {
+  name: "tile_atlas"
+  texture: "/assets/images/tile_atlas.atlas"
+}
 nodes {
   position {
     x: 480.0
@@ -13,9 +17,9 @@ nodes {
   type: TYPE_BOX
   id: "message_box/box"
   parent: "message_box"
+  overridden_fields: 45
   overridden_fields: 46
   template_node_child: true
-  visible: false
 }
 nodes {
   type: TYPE_TEXT
@@ -23,7 +27,50 @@ nodes {
   parent: "message_box/box"
   overridden_fields: 46
   template_node_child: true
-  visible: false
+}
+nodes {
+  position {
+    x: 90.0
+    y: 530.0
+  }
+  type: TYPE_BOX
+  texture: "tile_atlas/arrow-up"
+  id: "up_arrow"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 30.0
+    y: 470.0
+  }
+  type: TYPE_BOX
+  texture: "tile_atlas/arrow-left"
+  id: "left_arrow"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 150.0
+    y: 470.0
+  }
+  type: TYPE_BOX
+  texture: "tile_atlas/arrow-right"
+  id: "right_arrow"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 90.0
+    y: 410.0
+  }
+  type: TYPE_BOX
+  texture: "tile_atlas/arrow-down"
+  id: "down_arrow"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

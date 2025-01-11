@@ -25,4 +25,8 @@ layers {
   id: "Character"
   z: 0.3
 }
+layers {
+  id: "Intensity"
+  z: 0.4
+}
 material: "/builtins/materials/tile_map.material"

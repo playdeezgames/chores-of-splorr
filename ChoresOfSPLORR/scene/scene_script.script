@@ -10,6 +10,7 @@ local item = require("world.item")
 local item_type = require("world.item_type")
 local feature   = require("world.feature")
 local feature_type = require("world.feature_type")
+local statistic_type = require("world.statistic_type")
 
 local TILEMAP_URL = "/scene#scene"
 local INVENTORY_URL = "/scene#inventory"
@@ -17,6 +18,7 @@ local TERRAIN_LAYER = "Terrain"
 local CHARACTER_LAYER = "Character"
 local ITEM_LAYER = "Item"
 local FEATURE_LAYER = "Feature"
+local INTENSITY_LAYER = "Intensity"
 
 local modal_message = false
 
@@ -36,6 +38,9 @@ function init(self)
 
 A Production of TheGrumpyGameDev
 For GlamJam 2025
+
+(with "help" from his malcontents and
+ne'er-do-wells that watch him stream)
 
 You have a set of tasks in yer house.
 They are thankless chores!
@@ -73,6 +78,14 @@ local function update_scene()
 				tile = feature_type.get_tile(feature_type_id)
 			end
 			tilemap.set_tile(TILEMAP_URL, FEATURE_LAYER, column, row, tile)
+			tile = 0
+			if feature_id ~= nil then
+				local intensity = feature.get_statistic(feature_id, statistic_type.INTENSITY)
+				if intensity ~= nil and intensity > 1 then
+					tile = grimoire.INTENSITY_TILE_START + intensity
+				end
+			end
+			tilemap.set_tile(TILEMAP_URL, INTENSITY_LAYER, column, row, tile)
 
 			local item_id = room.get_item(room_id, column, row)
 			tile = 0
@@ -107,6 +120,19 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
+	if message_id == hash(grimoire.MSG_SHOW_MESSAGE) then
+		show_modal_message(message.text)
+	elseif message_id == hash(grimoire.MSG_HIDE_MESSAGE) then
+		hide_modal_message()
+	elseif message_id == hash(grimoire.MSG_MOVE_UP) then
+		avatar.move_up()
+	elseif message_id == hash(grimoire.MSG_MOVE_DOWN) then
+		avatar.move_down()
+	elseif message_id == hash(grimoire.MSG_MOVE_LEFT) then
+		avatar.move_left()
+	elseif message_id == hash(grimoire.MSG_MOVE_RIGHT) then
+		avatar.move_right()
+	end
 end
 
 function on_input(self, action_id, action)
@@ -116,13 +142,13 @@ function on_input(self, action_id, action)
 		end
 	else
 		if action_id == hash(actions.UP) and (action.pressed or action.repeated) then
-			avatar.move_up(false)
+			avatar.move_up()
 		elseif action_id == hash(actions.RIGHT) and (action.pressed or action.repeated) then
-			avatar.move_right(false)
+			avatar.move_right()
 		elseif action_id == hash(actions.DOWN) and (action.pressed or action.repeated) then
-			avatar.move_down(false)
+			avatar.move_down()
 		elseif action_id == hash(actions.LEFT) and (action.pressed or action.repeated) then
-			avatar.move_left(false)
+			avatar.move_left()
 		end
 	end
 end

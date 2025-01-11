@@ -6,13 +6,11 @@ local item_type = require("world.item_type")
 local lock_type = require("world.lock_type")
 local sfx = require("game.sfx")
 local feature = require("world.feature")
-local feature_type = require("world.feature_type")
-local statistic_type = require("world.statistic_type")
 local interaction_type = require("world.interaction_type")
 local M = {}
 local data = {}
 
-local function move_avatar(delta_column, delta_row, pull)
+local function move_avatar(delta_column, delta_row)
     local character_id = M.get_character()
     local room_id, column, row = character.get_room(character_id)
 
@@ -98,16 +96,16 @@ end
 function M.get_character()
     return data.character_id
 end
-function M.move_up(pull)
-    move_avatar(0, 1, pull)
+function M.move_up()
+    move_avatar(0, 1)
 end
-function M.move_right(pull)
-    move_avatar(1, 0, pull)
+function M.move_right()
+    move_avatar(1, 0)
 end
-function M.move_down(pull)
-    move_avatar(0, -1, pull)
+function M.move_down()
+    move_avatar(0, -1)
 end
-function M.move_left(pull)
-    move_avatar(-1, 0, pull)
+function M.move_left()
+    move_avatar(-1, 0)
 end
 return M

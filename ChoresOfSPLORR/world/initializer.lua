@@ -11,13 +11,16 @@ local feature_type = require("world.feature_type")
 local feature = require("world.feature")
 local statistic_type = require("world.statistic_type")
 local interaction_type = require("world.interaction_type")
+local metadata_type    = require("world.metadata_type")
+
+local DIRT_PILE_MAXIMUM_INTENSITY = 9
 
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
 feature_type.set_can_interact(
     feature_type.DIRT_PILE, 
-    function(_, character_id, context)
+    function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
             return false
         end
@@ -30,8 +33,12 @@ feature_type.set_can_interact(
         if next_feature_id == nil then
             return true
         end
-        local next_feature_type_id = feature.get_feature_type(next_feature_id)
-        return next_feature_type_id == feature_type.DUST_BIN or next_feature_type_id == feature_type.DIRT_PILE
+		local next_feature_type_id = feature.get_feature_type(next_feature_id)
+		if next_feature_type_id == feature_type.DIRT_PILE then
+			local total_intensity = feature.get_statistic(next_feature_id, statistic_type.INTENSITY) + feature.get_statistic(feature_id, statistic_type.INTENSITY)
+			return total_intensity <= DIRT_PILE_MAXIMUM_INTENSITY
+		end
+        return next_feature_type_id == feature_type.DUST_BIN
     end)
 feature_type.set_interact(
     feature_type.DIRT_PILE, 
@@ -52,8 +59,16 @@ feature_type.set_interact(
 feature_type.set_can_interact(
     feature_type.SIGN, 
     function(feature_id, character_id, context) 
-        return context.interaction == interaction_type.PUSH 
+        return context.interaction == interaction_type.PUSH
     end)
+feature_type.set_interact(
+	feature_type.SIGN,
+	function(feature_id, character_id, context)
+		msg.post(
+			grimoire.URL_SCENE, 
+			grimoire.MSG_SHOW_MESSAGE, 
+			{text = feature.get_metadata(feature_id, metadata_type.MESSAGE)})
+	end)
 
 local function create_room_item(room_id, column, row, item_type_id)
 	local item_id = item.create(item_type_id)
@@ -120,6 +135,7 @@ local function initialize_starting_room()
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)
 	local sign_feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X + 1, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
+	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, [[This is a sign. Yer reading it.]])
 
 
 	local character_id = character.create(character_type.HERO)

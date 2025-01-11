@@ -1,0 +1,13 @@
+images {
+  image: "/assets/images/arrow-down.png"
+}
+images {
+  image: "/assets/images/arrow-left.png"
+}
+images {
+  image: "/assets/images/arrow-right.png"
+}
+images {
+  image: "/assets/images/arrow-up.png"
+}
+extrude_borders: 2

@@ -5,4 +5,5 @@ M.DOWN = "DOWN"
 M.UP = "UP"
 M.SHIFT = "SHIFT"
 M.GREEN = "GREEN"
+M.CLICK = "CLICK"
 return M
