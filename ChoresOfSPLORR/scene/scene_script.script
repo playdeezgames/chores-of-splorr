@@ -32,7 +32,17 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	show_modal_message("Welcome to Chores of SPLORR!!")
+	show_modal_message([[Welcome to Chores of SPLORR!!
+
+A Production of TheGrumpyGameDev
+For GlamJam 2025
+
+You have a set of tasks in yer house.
+They are thankless chores!
+The first of yer tasks is sweeping.
+Grab a broom, and get to it!
+
+<SPACE> to close]])
 	initializer.initialize()
 end
 

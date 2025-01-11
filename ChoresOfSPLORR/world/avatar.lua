@@ -12,46 +12,6 @@ local interaction_type = require("world.interaction_type")
 local M = {}
 local data = {}
 
-feature_type.set_can_interact(
-    feature_type.DIRT_PILE, 
-    function(_, character_id, context)
-        if not character.has_item_type(character_id, item_type.BROOM) then
-            return false
-        end
-        local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
-        local terrain_id = room.get_terrain(context.room_id, next_column, next_row)
-        if terrain_id ~= terrain.FLOOR then
-            return false
-        end
-        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
-        if next_feature_id == nil then
-            return true
-        end
-        local next_feature_type_id = feature.get_feature_type(next_feature_id)
-        return next_feature_type_id == feature_type.DUST_BIN or next_feature_type_id == feature_type.DIRT_PILE
-    end)
-feature_type.set_interact(
-    feature_type.DIRT_PILE, 
-    function(feature_id, _, context)
-        room.set_feature(context.room_id, context.column, context.row, nil)
-        local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
-        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
-        if next_feature_id == nil then
-            room.set_feature(context.room_id, next_column, next_row , feature_id)
-        else
-            local next_feature_type_id = feature.get_feature_type(next_feature_id)
-            if next_feature_type_id == feature_type.DIRT_PILE then
-                local total_intensity = feature.get_statistic(next_feature_id, statistic_type.INTENSITY) + feature.get_statistic(feature_id, statistic_type.INTENSITY)
-                feature.set_statistic(next_feature_id, statistic_type.INTENSITY, total_intensity)
-            end
-        end
-    end)
-feature_type.set_can_interact(
-    feature_type.SIGN, 
-    function(feature_id, character_id, context) 
-        return context.interaction == interaction_type.PUSH 
-    end)
-
 local function move_avatar(delta_column, delta_row, pull)
     local character_id = M.get_character()
     local room_id, column, row = character.get_room(character_id)
