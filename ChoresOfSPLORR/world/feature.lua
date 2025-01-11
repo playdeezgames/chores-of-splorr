@@ -19,6 +19,13 @@ function M.set_statistic(feature_id, statistic_type_id, statistic_value)
     end
     feature_data.statistics[statistic_type_id] = statistic_value
 end
+function M.get_statistic(feature_id, statistic_type_id)
+    local feature_data = data[feature_id]
+    if feature_data.statistics == nil then
+        return nil
+    end
+    return feature_data.statistics[statistic_type_id]
+end
 function M.can_interact(feature_id, character_id, context)
     local feature_type_id = M.get_feature_type(feature_id)
     local callback = feature_type.get_can_interact(feature_type_id)
@@ -41,5 +48,12 @@ end
 function M.get_success_sfx(feature_id)
     local feature_type_id = M.get_feature_type(feature_id)
     return feature_type.get_success_sfx(feature_type_id)
+end
+function M.set_metadata(feature_id, metadata_type_id, metadata_value)
+    local feature_data = data[feature_id]
+    if feature_data.metadatas == nil then
+        feature_data.metadatas = {}
+    end
+    feature_data.metadatas[metadata_type_id] = metadata_value
 end
 return M

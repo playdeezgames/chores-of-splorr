@@ -1,0 +1,50 @@
+local grimoire = require("game.grimoire")
+
+function init(self)
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	local message_box_node = gui.get_node("message_box/box")
+	local message_box_text_node = gui.get_node("message_box/text")
+	if message_id == hash(grimoire.MSG_SHOW_MESSAGE) then
+		gui.set_visible(message_box_node, true)
+		gui.set_visible(message_box_text_node, true)
+		gui.set_text(message_box_text_node, message.text)
+	elseif message_id == hash(grimoire.MSG_HIDE_MESSAGE) then
+		gui.set_visible(message_box_node, false)
+		gui.set_visible(message_box_text_node, false)
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here. The game object this script is attached to
+	-- must have acquired input focus:
+	--
+	--    msg.post(".", "acquire_input_focus")
+	--
+	-- All mapped input bindings will be received. Mouse and touch input will
+	-- be received regardless of where on the screen it happened.
+	-- Learn more: https://defold.com/manuals/input/
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Learn more: https://defold.com/manuals/hot-reload/
+	-- Remove this function if not needed
+end

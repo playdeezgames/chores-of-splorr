@@ -18,6 +18,46 @@ key_trigger {
   input: KEY_LSHIFT
   action: "SHIFT"
 }
+key_trigger {
+  input: KEY_A
+  action: "LEFT"
+}
+key_trigger {
+  input: KEY_Q
+  action: "LEFT"
+}
+key_trigger {
+  input: KEY_W
+  action: "UP"
+}
+key_trigger {
+  input: KEY_Z
+  action: "UP"
+}
+key_trigger {
+  input: KEY_S
+  action: "DOWN"
+}
+key_trigger {
+  input: KEY_D
+  action: "RIGHT"
+}
+key_trigger {
+  input: KEY_SPACE
+  action: "GREEN"
+}
+key_trigger {
+  input: KEY_ESC
+  action: "RED"
+}
+key_trigger {
+  input: KEY_TAB
+  action: "YELLOW"
+}
+key_trigger {
+  input: KEY_ENTER
+  action: "BLUE"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

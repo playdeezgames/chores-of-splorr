@@ -1,0 +1,29 @@
+script: "/UI/gui_script.gui_script"
+nodes {
+  position {
+    x: 480.0
+    y: 320.0
+  }
+  type: TYPE_TEMPLATE
+  id: "message_box"
+  inherit_alpha: true
+  template: "/UI/message.gui"
+}
+nodes {
+  type: TYPE_BOX
+  id: "message_box/box"
+  parent: "message_box"
+  overridden_fields: 46
+  template_node_child: true
+  visible: false
+}
+nodes {
+  type: TYPE_TEXT
+  id: "message_box/text"
+  parent: "message_box/box"
+  overridden_fields: 46
+  template_node_child: true
+  visible: false
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

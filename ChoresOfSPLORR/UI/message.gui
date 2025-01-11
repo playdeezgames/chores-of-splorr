@@ -1,0 +1,38 @@
+fonts {
+  name: "default"
+  font: "/builtins/fonts/default.font"
+}
+nodes {
+  size {
+    x: 480.0
+    y: 480.0
+  }
+  color {
+    x: 0.937
+    y: 0.867
+    z: 0.949
+  }
+  type: TYPE_BOX
+  id: "box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 480.0
+    y: 480.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "default"
+  id: "text"
+  parent: "box"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

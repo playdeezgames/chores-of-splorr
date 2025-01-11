@@ -3,6 +3,7 @@ local M = {}
 
 M.DIRT_PILE = "DIRT_PILE"
 M.DUST_BIN = "DUST_BIN"
+M.SIGN = "SIGN"
 
 local descriptors = {
     [M.DIRT_PILE] = {
@@ -12,6 +13,11 @@ local descriptors = {
     },
     [M.DUST_BIN] = {
         tile = 9,
+        failure_sfx=sfx.LOCKED,
+        success_sfx=sfx.UNLOCK
+    },
+    [M.SIGN] = {
+        tile = 10,
         failure_sfx=sfx.LOCKED,
         success_sfx=sfx.UNLOCK
     }
