@@ -69,6 +69,12 @@ local function move_avatar(delta_column, delta_row)
         return
     end
 
+    local next_character_id = room.get_character(next_room_id, next_column, next_row)
+    if next_character_id ~= nil then
+        --TODO: bump character sfx
+        return
+    end
+
     local teleport_room_id, teleport_column, teleport_row = room.get_teleport(next_room_id, next_column, next_row)
     if teleport_room_id ~= nil then
         next_room_id = teleport_room_id

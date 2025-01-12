@@ -14,6 +14,7 @@ local interaction_type = require("world.interaction_type")
 local metadata_type    = require("world.metadata_type")
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
+local DIRT_PILE_SCORE_MULTIPLIER = 10
 
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
@@ -35,8 +36,7 @@ feature_type.set_can_interact(
         end
 		local next_feature_type_id = feature.get_feature_type(next_feature_id)
 		if next_feature_type_id == feature_type.DIRT_PILE then
-			local total_intensity = feature.get_statistic(next_feature_id, statistic_type.INTENSITY) + feature.get_statistic(feature_id, statistic_type.INTENSITY)
-			return total_intensity <= DIRT_PILE_MAXIMUM_INTENSITY
+			return true
 		end
         return next_feature_type_id == feature_type.DUST_BIN
     end)
@@ -58,10 +58,16 @@ feature_type.set_interact(
             local next_feature_type_id = feature.get_feature_type(next_feature_id)
             if next_feature_type_id == feature_type.DIRT_PILE then
                 local total_intensity = feature.get_statistic(next_feature_id, statistic_type.INTENSITY) + feature.get_statistic(feature_id, statistic_type.INTENSITY)
-                feature.set_statistic(next_feature_id, statistic_type.INTENSITY, total_intensity)
+				if total_intensity <= DIRT_PILE_MAXIMUM_INTENSITY then
+					feature.set_statistic(next_feature_id, statistic_type.INTENSITY, total_intensity)
+				else
+					local dust_bunny_character_id = character.create(character_type.DUST_BUNNY)
+					room.set_feature(context.room_id, next_column, next_row, nil)
+					room.set_character(context.room_id, next_column, next_row, dust_bunny_character_id)
+					--TODO: turn into a dust bunny sfx
+				end
 			elseif next_feature_type_id == feature_type.DUST_BIN then
-				local SCORE_MULTIPLIER = 10
-				local score = SCORE_MULTIPLIER * feature.get_statistic(feature_id, statistic_type.INTENSITY)
+				local score = DIRT_PILE_SCORE_MULTIPLIER * feature.get_statistic(feature_id, statistic_type.INTENSITY)
 				character.set_statistic(character_id, statistic_type.SCORE, character.get_statistic(character_id, statistic_type.SCORE) + score)
 				--TODO: play sfx for putting dust into the bin
             end
