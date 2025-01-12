@@ -26,11 +26,11 @@ feature_type.set_can_interact(
             return false
         end
         local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
-        local terrain_id = room.get_terrain(context.room_id, next_column, next_row)
+        local terrain_id = room.get_cell_terrain(context.room_id, next_column, next_row)
         if terrain_id ~= terrain.FLOOR then
             return false
         end
-        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
+        local next_feature_id = room.get_cell_feature(context.room_id, next_column, next_row)
         if next_feature_id == nil then
             return true
         end
@@ -43,17 +43,17 @@ feature_type.set_can_interact(
 feature_type.set_interact(
     feature_type.DIRT_PILE, 
     function(feature_id, character_id, context)
-        room.set_feature(context.room_id, context.column, context.row, nil)
+        room.set_cell_feature(context.room_id, context.column, context.row, nil)
 		local item_id = feature.get_item(feature_id)
 		if item_id ~= nil then
-			room.set_item(context.room_id, context.column, context.row, item_id)
+			room.set_cell_item(context.room_id, context.column, context.row, item_id)
 			feature.set_item(feature_id, nil)
 			--TODO: play sfx for unveiling item hidden in dirt?
 		end
         local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
-        local next_feature_id = room.get_feature(context.room_id, next_column, next_row)
+        local next_feature_id = room.get_cell_feature(context.room_id, next_column, next_row)
         if next_feature_id == nil then
-            room.set_feature(context.room_id, next_column, next_row , feature_id)
+            room.set_cell_feature(context.room_id, next_column, next_row , feature_id)
         else
             local next_feature_type_id = feature.get_feature_type(next_feature_id)
             if next_feature_type_id == feature_type.DIRT_PILE then
@@ -62,8 +62,8 @@ feature_type.set_interact(
 					feature.set_statistic(next_feature_id, statistic_type.INTENSITY, total_intensity)
 				else
 					local dust_bunny_character_id = character.create(character_type.DUST_BUNNY)
-					room.set_feature(context.room_id, next_column, next_row, nil)
-					room.set_character(context.room_id, next_column, next_row, dust_bunny_character_id)
+					room.set_cell_feature(context.room_id, next_column, next_row, nil)
+					room.set_cell_character(context.room_id, next_column, next_row, dust_bunny_character_id)
 					--TODO: turn into a dust bunny sfx
 				end
 			elseif next_feature_type_id == feature_type.DUST_BIN then
@@ -89,33 +89,33 @@ feature_type.set_interact(
 
 local function create_room_item(room_id, column, row, item_type_id)
 	local item_id = item.create(item_type_id)
-	room.set_item(room_id, column, row, item_id)
+	room.set_cell_item(room_id, column, row, item_id)
 	return item_id
 end
 
 local function create_room_feature(room_id, column, row, feature_type_id)
 	local feature_id = feature.create(feature_type_id)
-	room.set_feature(room_id, column, row, feature_id)
+	room.set_cell_feature(room_id, column, row, feature_id)
 	return feature_id
 end
 
 local function place_feature(room_id, feature_type_id)
-	local column, row = math.random(1, room.get_columns(room_id)), math.random(1, room.get_rows(room_id))
-	local terrain_id = room.get_terrain(room_id, column, row)
+	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
+	local terrain_id = room.get_cell_terrain(room_id, column, row)
 	if not terrain.is_passable(terrain_id) then
 		return nil
 	end
-	if room.get_item(room_id, column, row) ~= nil then
+	if room.get_cell_item(room_id, column, row) ~= nil then
 		return nil
 	end
-	if room.get_character(room_id, column, row) ~= nil then
+	if room.get_cell_character(room_id, column, row) ~= nil then
 		return nil
 	end
-	if room.get_feature(room_id, column, row) ~= nil then
+	if room.get_cell_feature(room_id, column, row) ~= nil then
 		return nil
 	end
 	local feature_id = feature.create(feature_type_id)
-	room.set_feature(room_id, column, row, feature_id)
+	room.set_cell_feature(room_id, column, row, feature_id)
 	return feature_id
 end
 
@@ -142,13 +142,13 @@ local function initialize_starting_room()
 			if column == 1 or row == 1 or column == grimoire.BOARD_COLUMNS or row == grimoire.BOARD_ROWS then
 				terrain_id = terrain.WALL
 			end
-			room.set_terrain(room_id, column, row, terrain_id)
+			room.set_cell_terrain(room_id, column, row, terrain_id)
 		end
 	end
 
 	local exit_column, exit_row = grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y
-	room.set_terrain(room_id, exit_column, exit_row, terrain.CLOSED_DOOR)
-	room.set_lock_type(room_id, exit_column, exit_row, lock_type.COMMON)
+	room.set_cell_terrain(room_id, exit_column, exit_row, terrain.CLOSED_DOOR)
+	room.set_cell_lock_type(room_id, exit_column, exit_row, lock_type.COMMON)
 
 	create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
 
@@ -158,7 +158,7 @@ local function initialize_starting_room()
 
 
 	local character_id = character.create(character_type.HERO)
-	room.set_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
+	room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
 	character.set_statistic(character_id, statistic_type.MOVES, 0)
 	character.set_statistic(character_id, statistic_type.SCORE, 0)
 	avatar.set_character(character_id)
@@ -186,12 +186,12 @@ local function initialize_second_room(starting_room_id)
 			if column == 1 or row == 1 or column == grimoire.BOARD_COLUMNS or row == grimoire.BOARD_ROWS then
 				terrain_id = terrain.WALL
 			end
-			room.set_terrain(room_id, column, row, terrain_id)
+			room.set_cell_terrain(room_id, column, row, terrain_id)
 		end
 	end
-	room.set_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.OPEN_DOOR)
-	room.set_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
-	room.set_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
+	room.set_cell_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.OPEN_DOOR)
+	room.set_cell_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
+	room.set_cell_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
 	return room_id
 end
 

@@ -22,9 +22,9 @@ local function move_avatar(delta_column, delta_row)
     local prev_column = column - delta_column
     local prev_row = row - delta_row
 
-    local terrain_id = room.get_terrain(next_room_id, next_column, next_row)
+    local terrain_id = room.get_cell_terrain(next_room_id, next_column, next_row)
     if not terrain.is_passable(terrain_id) then
-        local lock_type_id = room.get_lock_type(next_room_id, next_column, next_row)
+        local lock_type_id = room.get_cell_lock_type(next_room_id, next_column, next_row)
         if lock_type_id ~= nil then
             local key_item_type_id = lock_type.get_key_item_type_id(lock_type_id)
             if not character.has_item_type(character_id, key_item_type_id) then
@@ -34,9 +34,9 @@ local function move_avatar(delta_column, delta_row)
                 if lock_type.destroys_key(lock_type_id) then
                     character.remove_item_of_type(character_id, key_item_type_id)
                 end
-                room.set_terrain(next_room_id, next_column, next_row, lock_type.to_terrain_id(lock_type_id))
+                room.set_cell_terrain(next_room_id, next_column, next_row, lock_type.to_terrain_id(lock_type_id))
                 if lock_type.destroys_lock(lock_type_id) then
-                    room.set_lock_type(next_room_id, next_column, next_row, nil)
+                    room.set_cell_lock_type(next_room_id, next_column, next_row, nil)
                 end
                 sfx.trigger(lock_type.get_success_sfx(lock_type_id))
                 return
@@ -46,18 +46,18 @@ local function move_avatar(delta_column, delta_row)
         return
     end
 
-    local item_id = room.get_item(next_room_id, next_column, next_row)
+    local item_id = room.get_cell_item(next_room_id, next_column, next_row)
     if item_id ~= nil then
         local item_type_id = item.get_item_type(item_id)
         if item_type.can_pick_up(item_type_id) then
             sfx.trigger(item_type.get_pickup_sfx(item_type_id))
-            room.set_item(next_room_id, next_column, next_row, nil)
+            room.set_cell_item(next_room_id, next_column, next_row, nil)
             character.add_item(character_id, item_id)
             return
         end
     end
 
-    local feature_id = room.get_feature(next_room_id, next_column, next_row)
+    local feature_id = room.get_cell_feature(next_room_id, next_column, next_row)
     if feature_id ~= nil then
         local context = {room_id=next_room_id, column=next_column, row=next_row, delta_column = delta_column, delta_row=delta_row, interaction = interaction_type.PUSH}
         if not feature.can_interact(feature_id, character_id, context) then
@@ -69,13 +69,13 @@ local function move_avatar(delta_column, delta_row)
         return
     end
 
-    local next_character_id = room.get_character(next_room_id, next_column, next_row)
+    local next_character_id = room.get_cell_character(next_room_id, next_column, next_row)
     if next_character_id ~= nil then
         --TODO: bump character sfx
         return
     end
 
-    local teleport_room_id, teleport_column, teleport_row = room.get_teleport(next_room_id, next_column, next_row)
+    local teleport_room_id, teleport_column, teleport_row = room.get_cell_teleport(next_room_id, next_column, next_row)
     if teleport_room_id ~= nil then
         next_room_id = teleport_room_id
         next_column = teleport_column
@@ -89,9 +89,9 @@ local function move_avatar(delta_column, delta_row)
         character.get_statistic(
             character_id, 
             statistic_type.MOVES) + 1)
-    room.set_character(room_id, column, row, nil)
-    room.set_character(next_room_id, next_column, next_row, character_id)
-    feature_id = room.get_feature(prev_room_id, prev_column, prev_row)
+    room.set_cell_character(room_id, column, row, nil)
+    room.set_cell_character(next_room_id, next_column, next_row, character_id)
+    feature_id = room.get_cell_feature(prev_room_id, prev_column, prev_row)
     if feature_id ~= nil then
         local context = {room_id=prev_room_id, column=prev_column, row=prev_row, delta_column = delta_column, delta_row=delta_row, interaction=interaction_type.PULL}
         if not feature.can_interact(feature_id, character_id, context) then

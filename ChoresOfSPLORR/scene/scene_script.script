@@ -59,11 +59,11 @@ local function update_scene()
 	local room_id = character.get_room(avatar_character_id)
 	for column= 1, grimoire.BOARD_COLUMNS do
 		for row = 1, grimoire.BOARD_ROWS do
-			local terrain_id = room.get_terrain(room_id, column, row)
+			local terrain_id = room.get_cell_terrain(room_id, column, row)
 			local tile = terrain.get_tile(terrain_id)
 			tilemap.set_tile(TILEMAP_URL, TERRAIN_LAYER, column, row, tile)
 
-			local character_id = room.get_character(room_id, column, row)
+			local character_id = room.get_cell_character(room_id, column, row)
 			tile = 0
 			if character_id ~= nil then
 				local character_type_id = character.get_character_type(character_id)
@@ -71,7 +71,7 @@ local function update_scene()
 			end
 			tilemap.set_tile(TILEMAP_URL, CHARACTER_LAYER, column, row, tile)
 
-			local feature_id = room.get_feature(room_id, column, row)
+			local feature_id = room.get_cell_feature(room_id, column, row)
 			tile = 0
 			if feature_id ~= nil then
 				local feature_type_id = feature.get_feature_type(feature_id)
@@ -87,7 +87,7 @@ local function update_scene()
 			end
 			tilemap.set_tile(TILEMAP_URL, INTENSITY_LAYER, column, row, tile)
 
-			local item_id = room.get_item(room_id, column, row)
+			local item_id = room.get_cell_item(room_id, column, row)
 			tile = 0
 			if item_id ~= nil then
 				local item_type_id = item.get_item_type(item_id)

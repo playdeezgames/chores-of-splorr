@@ -15,23 +15,23 @@ function M.create(columns, rows)
 	table.insert(data, room_data)
 	return room_id
 end
-function M.get_columns(room_id)
+function M.get_cell_columns(room_id)
 	local room_data = data[room_id].cells
 	return #room_data
 end
-function M.get_rows(room_id)
+function M.get_cell_rows(room_id)
 	local room_data = data[room_id].cells
 	return #(room_data[1])
 end
-function M.set_terrain(room_id, column, row, terrain_id)
+function M.set_cell_terrain(room_id, column, row, terrain_id)
 	local room_data = data[room_id].cells
 	room_data[column][row].terrain_id = terrain_id
 end
-function M.get_terrain(room_id, column, row)
+function M.get_cell_terrain(room_id, column, row)
 	local room_data = data[room_id].cells
 	return room_data[column][row].terrain_id
 end
-function M.set_character(room_id, column, row, character_id)
+function M.set_cell_character(room_id, column, row, character_id)
 	local room_data = data[room_id].cells
 	local old_character_id = room_data[column][row].character_id
 	if old_character_id ~= nil then
@@ -42,27 +42,27 @@ function M.set_character(room_id, column, row, character_id)
 		character.set_room(character_id, room_id, column, row)
 	end
 end
-function M.get_character(room_id, column, row)
+function M.get_cell_character(room_id, column, row)
 	local cell_data = data[room_id].cells
 	return cell_data[column][row].character_id
 end
-function M.set_item(room_id, column, row, item_id)
+function M.set_cell_item(room_id, column, row, item_id)
 	local cell_data = data[room_id].cells
 	cell_data[column][row].item_id = item_id
 end
-function M.get_item(room_id, column, row)
+function M.get_cell_item(room_id, column, row)
 	local cell_data = data[room_id].cells
 	return cell_data[column][row].item_id
 end
-function M.set_lock_type(room_id, column, row, lock_type_id)
+function M.set_cell_lock_type(room_id, column, row, lock_type_id)
 	local cell_data = data[room_id].cells
 	cell_data[column][row].lock_type_id = lock_type_id
 end
-function M.get_lock_type(room_id, column, row)
+function M.get_cell_lock_type(room_id, column, row)
 	local cell_data = data[room_id].cells
 	return cell_data[column][row].lock_type_id
 end
-function M.set_teleport(room_id, column, row, to_room_id, to_column,  to_row)
+function M.set_cell_teleport(room_id, column, row, to_room_id, to_column,  to_row)
 	local cell_data = data[room_id].cells
 	cell_data[column][row].teleport = {
 		room_id = to_room_id,
@@ -70,18 +70,18 @@ function M.set_teleport(room_id, column, row, to_room_id, to_column,  to_row)
 		row = to_row
 	}
 end
-function M.get_teleport(room_id, column, row)
+function M.get_cell_teleport(room_id, column, row)
 	local cell_data = data[room_id].cells
 	local teleport_data = cell_data[column][row].teleport
 	if teleport_data ~= nil then
 		return teleport_data.room_id, teleport_data.column, teleport_data.row
 	end
 end
-function M.set_feature(room_id, column, row, feature_id)
+function M.set_cell_feature(room_id, column, row, feature_id)
 	local cell_data = data[room_id].cells
 	cell_data[column][row].feature_id = feature_id
 end
-function M.get_feature(room_id, column, row)
+function M.get_cell_feature(room_id, column, row)
 	local cell_data = data[room_id].cells
 	return cell_data[column][row].feature_id
 end
