@@ -65,4 +65,18 @@ function M.remove_item_of_type(character_id, item_type_id)
     if item_id == nil then return end
     M.remove_item(character_id, item_id)
 end
+function M.set_statistic(character_id, statistic_type_id, statistic_value)
+    local creature_data = data[character_id]
+    if creature_data.statistics == nil then
+        creature_data.statistics = {}
+    end
+    creature_data.statistics[statistic_type_id] = statistic_value
+end
+function M.get_statistic(character_id, statistic_type_id)
+    local creature_data = data[character_id]
+    if creature_data.statistics == nil then
+        return nil
+    end
+    return creature_data.statistics[statistic_type_id]
+end
 return M

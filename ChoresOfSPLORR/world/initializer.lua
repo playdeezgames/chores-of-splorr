@@ -140,6 +140,7 @@ local function initialize_starting_room()
 
 	local character_id = character.create(character_type.HERO)
 	room.set_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
+	character.set_statistic(character_id, statistic_type.MOVES, 0)
 	avatar.set_character(character_id)
 
 	place_features(

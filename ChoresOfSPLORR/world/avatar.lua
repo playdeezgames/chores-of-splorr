@@ -7,6 +7,7 @@ local lock_type = require("world.lock_type")
 local sfx = require("game.sfx")
 local feature = require("world.feature")
 local interaction_type = require("world.interaction_type")
+local statistic_type   = require("world.statistic_type")
 local M = {}
 local data = {}
 
@@ -76,6 +77,12 @@ local function move_avatar(delta_column, delta_row)
     end
 
     sfx.trigger(terrain.get_step_sfx(terrain_id))
+    character.set_statistic(
+        character_id, 
+        statistic_type.MOVES, 
+        character.get_statistic(
+            character_id, 
+            statistic_type.MOVES) + 1)
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)
     local feature_id = room.get_feature(prev_room_id, prev_column, prev_row)
