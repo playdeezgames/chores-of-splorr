@@ -114,11 +114,21 @@ local function update_inventory()
 	end
 end
 
+local function update_moves()
+	local avatar_character_id = avatar.get_character()
+	label.set_text(grimoire.URL_MOVES_LABEL, "Moves: "..character.get_statistic(avatar_character_id, statistic_type.MOVES))
+end
+
+local function update_score()
+	local avatar_character_id = avatar.get_character()
+	label.set_text(grimoire.URL_SCORE_LABEL, "Score: "..character.get_statistic(avatar_character_id, statistic_type.SCORE))
+end
+
 function update(self, dt)
 	update_scene()
 	update_inventory()
-	local avatar_character_id = avatar.get_character()
-	label.set_text(grimoire.URL_MOVES_LABEL, "Moves: "..character.get_statistic(avatar_character_id, statistic_type.MOVES ))
+	update_moves()
+	update_score()
 end
 
 function on_message(self, message_id, message, sender)

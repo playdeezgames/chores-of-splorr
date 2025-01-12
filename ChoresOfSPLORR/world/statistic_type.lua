@@ -1,4 +1,5 @@
 local M = {}
 M.INTENSITY = "INTENSITY"
 M.MOVES = "MOVES"
+M.SCORE = "SCORE"
 return M

@@ -34,3 +34,19 @@ embedded_components {
     y: 18.0
   }
 }
+embedded_components {
+  id: "score_label"
+  type: "label"
+  data: "size {\n"
+  "  x: 90.0\n"
+  "  y: 16.0\n"
+  "}\n"
+  "text: \"Score: 9999\"\n"
+  "font: \"/builtins/fonts/default.font\"\n"
+  "material: \"/builtins/fonts/label-df.material\"\n"
+  ""
+  position {
+    x: 435.0
+    y: 34.0
+  }
+}

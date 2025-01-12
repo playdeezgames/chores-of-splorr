@@ -14,3 +14,7 @@ components {
   id: "STEP"
   component: "/assets/sfx/STEP.wav"
 }
+components {
+  id: "BUMP"
+  component: "/assets/sfx/BUMP.wav"
+}

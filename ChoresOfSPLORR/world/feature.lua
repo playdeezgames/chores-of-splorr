@@ -63,4 +63,12 @@ function M.get_metadata(feature_id, metadata_type_id)
     end
     return feature_data.metadatas[metadata_type_id]
 end
+function M.set_item(feature_id, item_id)
+	local feature_data = data[feature_id]
+	feature_data.item_id = item_id
+end
+function M.get_item(feature_id)
+	local feature_data = data[feature_id]
+	return feature_data.item_id
+end
 return M

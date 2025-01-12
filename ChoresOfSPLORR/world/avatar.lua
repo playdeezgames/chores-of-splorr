@@ -85,7 +85,7 @@ local function move_avatar(delta_column, delta_row)
             statistic_type.MOVES) + 1)
     room.set_character(room_id, column, row, nil)
     room.set_character(next_room_id, next_column, next_row, character_id)
-    local feature_id = room.get_feature(prev_room_id, prev_column, prev_row)
+    feature_id = room.get_feature(prev_room_id, prev_column, prev_row)
     if feature_id ~= nil then
         local context = {room_id=prev_room_id, column=prev_column, row=prev_row, delta_column = delta_column, delta_row=delta_row, interaction=interaction_type.PULL}
         if not feature.can_interact(feature_id, character_id, context) then
