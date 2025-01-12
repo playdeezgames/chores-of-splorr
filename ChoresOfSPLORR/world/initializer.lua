@@ -64,6 +64,11 @@ feature_type.set_interact(
 					local dust_bunny_character_id = character.create(character_type.DUST_BUNNY)
 					room.set_cell_feature(context.room_id, next_column, next_row, nil)
 					room.set_cell_character(context.room_id, next_column, next_row, dust_bunny_character_id)
+					character.set_statistic(dust_bunny_character_id, statistic_type.INTENSITY, total_intensity)
+					local feature_item_id = feature.get_item(next_feature_id)
+					if feature_item_id ~= nil then
+						character.add_item(dust_bunny_character_id, feature_item_id)
+					end
 					--TODO: turn into a dust bunny sfx
 				end
 			elseif next_feature_type_id == feature_type.DUST_BIN then

@@ -96,11 +96,10 @@ local function move_avatar(delta_column, delta_row)
         local context = {room_id=prev_room_id, column=prev_column, row=prev_row, delta_column = delta_column, delta_row=delta_row, interaction=interaction_type.PULL}
         if not feature.can_interact(feature_id, character_id, context) then
             sfx.trigger(feature.get_failure_sfx(feature_id))
-            return
+        else
+            feature.interact(feature_id, character_id, context)
+            sfx.trigger(feature.get_success_sfx(feature_id))
         end
-        feature.interact(feature_id, character_id, context)
-        sfx.trigger(feature.get_success_sfx(feature_id))
-        return
     end
 end
 function M.set_character(character_id)
