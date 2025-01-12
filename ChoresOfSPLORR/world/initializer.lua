@@ -171,7 +171,7 @@ local function initialize_second_room(starting_room_id)
 end
 
 function M.initialize()
-	local starting_room_id, avatar_character_id = initialize_starting_room()
+	local starting_room_id = initialize_starting_room()
 	initialize_second_room(starting_room_id)
 end
 
