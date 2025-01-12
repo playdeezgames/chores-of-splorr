@@ -101,6 +101,10 @@ local function move_avatar(delta_column, delta_row)
             sfx.trigger(feature.get_success_sfx(feature_id))
         end
     end
+    local other_characters = room.get_other_characters(room_id, character_id)
+    for _, other_character_id in ipairs(other_characters) do
+        character.do_move(other_character_id)
+    end
 end
 function M.set_character(character_id)
     data.character_id = character_id

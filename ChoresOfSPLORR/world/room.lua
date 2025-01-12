@@ -85,4 +85,16 @@ function M.get_cell_feature(room_id, column, row)
 	local cell_data = data[room_id].cells
 	return cell_data[column][row].feature_id
 end
+function M.get_other_characters(room_id, character_id)
+	local result = {}
+	for column = 1, M.get_cell_columns(room_id) do
+		for row = 1, M.get_cell_rows(room_id) do
+			local candidate = M.get_cell_character(room_id, column, row)
+			if candidate ~= nil and candidate ~= character_id then
+				table.insert(result, candidate)
+			end
+		end
+	end
+	return result
+end
 return M

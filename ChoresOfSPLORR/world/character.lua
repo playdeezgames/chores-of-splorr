@@ -1,4 +1,5 @@
 local item = require "world.item"
+local character_type = require "world.character_type"
 local M = {}
 local data = {}
 function M.create(character_type_id)
@@ -78,5 +79,16 @@ function M.get_statistic(character_id, statistic_type_id)
         return nil
     end
     return creature_data.statistics[statistic_type_id]
+end
+function M.do_move(character_id)
+    local character_type_id = M.get_character_type(character_id)
+    local move_handler = character_type.get_move_handler(character_type_id)
+    if move_handler ~= nil then
+        move_handler(character_id)
+    end
+end
+function M.change_statistic(character_id, statistic_type_id, delta)
+    M.set_statistic(character_id, statistic_type_id, M.get_statistic(character_id, statistic_type_id) + delta)
+    return M.get_statistic(character_id, statistic_type_id)
 end
 return M

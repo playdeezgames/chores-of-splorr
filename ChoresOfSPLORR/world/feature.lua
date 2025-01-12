@@ -71,4 +71,8 @@ function M.get_item(feature_id)
 	local feature_data = data[feature_id]
 	return feature_data.item_id
 end
+function M.change_statistic(feature_id, statistic_type_id, delta)
+    M.set_statistic(feature_id, statistic_type_id, M.get_statistic(feature_id, statistic_type_id) + delta)
+    return M.get_statistic(feature_id, statistic_type_id)
+end
 return M
