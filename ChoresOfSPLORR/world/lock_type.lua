@@ -10,7 +10,8 @@ local descriptors = {
         destroys_lock = true,
         to_terrain_id = terrain.OPEN_DOOR,
         fail_sfx_id = sfx.LOCKED,
-        success_sfx_id = sfx.UNLOCK
+        success_sfx_id = sfx.UNLOCK,
+        locked_message = "The DOOR is LOCKED.\n\nYou need a KEY."
     }
 }
 function M.get_key_item_type_id(lock_type_id)
@@ -30,5 +31,8 @@ function M.get_fail_sfx(lock_type_id)
 end
 function M.get_success_sfx(lock_type_id)
     return descriptors[lock_type_id].success_sfx_id
+end
+function M.get_locked_message(lock_type_id)
+    return descriptors[lock_type_id].locked_message
 end
 return M

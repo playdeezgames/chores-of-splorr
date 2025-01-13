@@ -12,6 +12,7 @@ local feature = require("world.feature")
 local statistic_type = require("world.statistic_type")
 local interaction_type = require("world.interaction_type")
 local metadata_type    = require("world.metadata_type")
+local sfx              = require("game.sfx")
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
@@ -19,10 +20,17 @@ local DIRT_PILE_SCORE_MULTIPLIER = 10
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
+local function show_message(text)
+	msg.post(
+			grimoire.URL_SCENE, 
+			grimoire.MSG_SHOW_MESSAGE, 
+			{text = text.."\n\n<SPACE> to close."})
+end
 feature_type.set_can_interact(
     feature_type.DIRT_PILE, 
     function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
+			show_message("This is a pile of DIRT.\n\nYou can use a BROOM to sweep it towards a DUST BIN.")
             return false
         end
         local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
@@ -69,7 +77,8 @@ feature_type.set_interact(
 					if feature_item_id ~= nil then
 						character.add_item(dust_bunny_character_id, feature_item_id)
 					end
-					--TODO: turn into a dust bunny sfx
+					show_message("You piled the DIRT too high...\n\n...and summoned a dread DUST BUNNY!")
+					sfx.trigger(sfx.DUST_BUNNY_SUMMON)
 				end
 			elseif next_feature_type_id == feature_type.DUST_BIN then
 				local score = DIRT_PILE_SCORE_MULTIPLIER * feature.get_statistic(feature_id, statistic_type.INTENSITY)
@@ -80,16 +89,23 @@ feature_type.set_interact(
     end)
 feature_type.set_can_interact(
     feature_type.SIGN, 
-    function(feature_id, character_id, context) 
+    function(_, _, context) 
         return context.interaction == interaction_type.PUSH
     end)
 feature_type.set_interact(
 	feature_type.SIGN,
-	function(feature_id, character_id, context)
-		msg.post(
-			grimoire.URL_SCENE, 
-			grimoire.MSG_SHOW_MESSAGE, 
-			{text = feature.get_metadata(feature_id, metadata_type.MESSAGE)})
+	function(feature_id, _, _)
+		show_message(feature.get_metadata(feature_id, metadata_type.MESSAGE))
+	end)
+feature_type.set_can_interact(
+	feature_type.DUST_BIN, 
+	function(_, _, context) 
+		return context.interaction == interaction_type.PUSH
+	end)
+feature_type.set_interact(
+	feature_type.DUST_BIN,
+	function(_, _, _)
+		show_message("This is the DUST BIN.\n\nYou push DIRT in here.")
 	end)
 character_type.set_move_handler(
 	character_type.DUST_BUNNY,
@@ -120,6 +136,7 @@ character_type.set_move_handler(
 			until done
 			room.set_cell_character(room_id, next_column, next_row, character_id)
 		end
+		sfx.trigger(sfx.DUST_BUNNY_TELEPORT)
 	end)
 
 
@@ -190,7 +207,9 @@ local function initialize_starting_room()
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)
 	local sign_feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X + 1, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
-	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, [[This is a sign. Yer reading it.]])
+	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, [[This is a sign. Yer reading it.
+
+You might also try interacting with other objects.]])
 
 
 	local character_id = character.create(character_type.HERO)
@@ -228,6 +247,9 @@ local function initialize_second_room(starting_room_id)
 	room.set_cell_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.OPEN_DOOR)
 	room.set_cell_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
 	room.set_cell_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
+
+	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
+	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
 	return room_id
 end
 

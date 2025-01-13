@@ -4,21 +4,30 @@ local M = {}
 M.DIRT_PILE = "DIRT_PILE"
 M.DUST_BIN = "DUST_BIN"
 M.SIGN = "SIGN"
+M.DISH_WASHER = "DISH_WASHER"
+M.CUPBOARD = "CUPBOARD"
 
 local descriptors = {
     [M.DIRT_PILE] = {
         tile = 7,
-        failure_sfx=sfx.LOCKED,
-        success_sfx=sfx.UNLOCK
+        failure_sfx=sfx.NO_SWEEP,
+        success_sfx=sfx.SWEEP
     },
     [M.DUST_BIN] = {
         tile = 9,
-        failure_sfx=sfx.LOCKED,
-        success_sfx=sfx.UNLOCK
+        success_sfx=sfx.DUST_BIN
     },
     [M.SIGN] = {
         tile = 10,
-        failure_sfx=sfx.LOCKED,
+        success_sfx=sfx.SIGN
+    },
+    [M.DISH_WASHER] = {
+        tile = 12,
+        success_sfx=sfx.UNLOCK
+    },
+    [M.CUPBOARD] = {
+        tile = 15,
+        failure_sfx=sfx.GENERIC_FAIL,
         success_sfx=sfx.UNLOCK
     }
 }
