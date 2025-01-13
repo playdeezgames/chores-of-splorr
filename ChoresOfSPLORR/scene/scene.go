@@ -50,3 +50,25 @@ embedded_components {
     y: 34.0
   }
 }
+embedded_components {
+  id: "keys_label"
+  type: "label"
+  data: "size {\n"
+  "  x: 90.0\n"
+  "  y: 64.0\n"
+  "}\n"
+  "text: \"Move:\\n"
+  "\"\n"
+  "  \"ARROWS\\n"
+  "\"\n"
+  "  \"WASD\\n"
+  "\"\n"
+  "  \"ZQSD\"\n"
+  "font: \"/builtins/fonts/default.font\"\n"
+  "material: \"/builtins/fonts/label-df.material\"\n"
+  ""
+  position {
+    x: 435.0
+    y: 278.0
+  }
+}
