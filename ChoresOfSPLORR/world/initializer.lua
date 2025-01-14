@@ -30,7 +30,9 @@ feature_type.set_can_interact(
     feature_type.DIRT_PILE, 
     function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
-			show_message("This is a pile of DIRT.\n\nYou can use a BROOM to sweep it towards a DUST BIN.")
+			if context.interaction == interaction_type.PUSH then
+				show_message("This is a pile of DIRT.\n\nYou can use a BROOM to sweep it towards a DUST BIN.")
+			end
             return false
         end
         local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
@@ -56,7 +58,7 @@ feature_type.set_interact(
 		if item_id ~= nil then
 			room.set_cell_item(context.room_id, context.column, context.row, item_id)
 			feature.set_item(feature_id, nil)
-			--TODO: play sfx for unveiling item hidden in dirt?
+			--TODO: reveal item
 		end
         local next_column, next_row = context.column + context.delta_column, context.row + context.delta_row
         local next_feature_id = room.get_cell_feature(context.room_id, next_column, next_row)
@@ -83,7 +85,7 @@ feature_type.set_interact(
 			elseif next_feature_type_id == feature_type.DUST_BIN then
 				local score = DIRT_PILE_SCORE_MULTIPLIER * feature.get_statistic(feature_id, statistic_type.INTENSITY)
 				character.change_statistic(character_id, statistic_type.SCORE, score)
-				--TODO: play sfx for putting dust into the bin
+				sfx.trigger(sfx.DUST_INTO_BIN)
             end
         end
     end)
@@ -152,6 +154,26 @@ local function create_room_feature(room_id, column, row, feature_type_id)
 	return feature_id
 end
 
+local function place_item(room_id, item_type_id)
+	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
+	local terrain_id = room.get_cell_terrain(room_id, column, row)
+	if not terrain.is_passable(terrain_id) then
+		return nil
+	end
+	if room.get_cell_item(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_character(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_feature(room_id, column, row) ~= nil then
+		return nil
+	end
+	local item_id = item.create(item_type_id)
+	room.set_cell_item(room_id, column, row, item_id)
+	return item_id
+end
+
 local function place_feature(room_id, feature_type_id)
 	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
 	local terrain_id = room.get_cell_terrain(room_id, column, row)
@@ -170,6 +192,21 @@ local function place_feature(room_id, feature_type_id)
 	local feature_id = feature.create(feature_type_id)
 	room.set_cell_feature(room_id, column, row, feature_id)
 	return feature_id
+end
+
+local function place_items(room_id, item_type_id, count, predicate)
+	local result = {}
+	while count > 0 do
+		local item_id = place_item(room_id, item_type_id)
+		if item_id ~= nil then
+			table.insert(result, item_id)
+			count = count - 1
+			if predicate ~= nil then
+				predicate(item_id)
+			end
+		end
+	end
+	return result
 end
 
 local function place_features(room_id, feature_type_id, count, predicate)
@@ -207,10 +244,7 @@ local function initialize_starting_room()
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)
 	local sign_feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X + 1, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
-	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, [[This is a sign. Yer reading it.
-
-You might also try interacting with other objects.]])
-
+	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "This is a sign. Yer reading it.\n\nYou might also try interacting with other objects.")
 
 	local character_id = character.create(character_type.HERO)
 	room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
@@ -250,6 +284,13 @@ local function initialize_second_room(starting_room_id)
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
+
+	place_items(
+		room_id, 
+		item_type.DIRTY_DISH,
+		25, 
+		function(item_id) end)
+
 	return room_id
 end
 

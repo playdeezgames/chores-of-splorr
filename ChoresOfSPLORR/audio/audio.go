@@ -50,3 +50,7 @@ components {
   id: "PICK_UP_BROOM"
   component: "/assets/sfx/PICK_UP_BROOM.wav"
 }
+components {
+  id: "DUST_INTO_BIN"
+  component: "/assets/sfx/DUST_INTO_BIN.wav"
+}

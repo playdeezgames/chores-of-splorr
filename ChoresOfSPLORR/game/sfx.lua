@@ -13,6 +13,7 @@ M.DUST_BUNNY_TELEPORT = "DUST_BUNNY_TELEPORT"
 M.GENERIC_FAIL = "GENERIC_FAIL"
 M.DUST_BIN = "DUST_BIN"
 M.SIGN = "SIGN"
+M.DUST_INTO_BIN = "DUST_INTO_BIN"
 
 function M.trigger(sfx_id)
     if sfx_id == nil then
