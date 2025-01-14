@@ -20,7 +20,7 @@ local descriptors = {
     [M.DIRTY_DISH] = {
         tile = 13,
         carryable = true,
-        pickup_sfx_id = sfx.PICK_UP_DIRTY_DISH,
+        pickup_sfx_id = sfx.DIRTY_DISH,
         pickup_message = nil
     },
     [M.CLEAN_DISH] = {

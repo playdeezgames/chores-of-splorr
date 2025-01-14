@@ -14,6 +14,9 @@ M.GENERIC_FAIL = "GENERIC_FAIL"
 M.DUST_BIN = "DUST_BIN"
 M.SIGN = "SIGN"
 M.DUST_INTO_BIN = "DUST_INTO_BIN"
+M.DISH_WASHER = "DISH_WASHER"
+M.CUPBOARD = "CUPBOARD"
+M.DIRTY_DISH = "DIRTY_DISH"
 
 function M.trigger(sfx_id)
     if sfx_id == nil then

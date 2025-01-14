@@ -23,12 +23,11 @@ local descriptors = {
     },
     [M.DISH_WASHER] = {
         tile = 12,
-        success_sfx=sfx.UNLOCK
+        success_sfx=sfx.DISH_WASHER
     },
     [M.CUPBOARD] = {
         tile = 15,
-        failure_sfx=sfx.GENERIC_FAIL,
-        success_sfx=sfx.UNLOCK
+        success_sfx=sfx.CUPBOARD
     }
 }
 function M.get_tile(feature_type_id)

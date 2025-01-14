@@ -54,3 +54,15 @@ components {
   id: "DUST_INTO_BIN"
   component: "/assets/sfx/DUST_INTO_BIN.wav"
 }
+components {
+  id: "DISH_WASHER"
+  component: "/assets/sfx/DISH_WASHER.wav"
+}
+components {
+  id: "CUPBOARD"
+  component: "/assets/sfx/CUPBOARD.wav"
+}
+components {
+  id: "DIRTY_DISH"
+  component: "/assets/sfx/DIRTY_DISH.wav"
+}
