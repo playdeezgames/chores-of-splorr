@@ -56,15 +56,20 @@ local function move_avatar(delta_column, delta_row)
 
     local item_id = room.get_cell_item(next_room_id, next_column, next_row)
     if item_id ~= nil then
-        local item_type_id = item.get_item_type(item_id)
-        if item_type.can_pick_up(item_type_id) then
-            sfx.trigger(item_type.get_pickup_sfx(item_type_id))
-            room.set_cell_item(next_room_id, next_column, next_row, nil)
-            character.add_item(character_id, item_id)
-            local message = item_type.get_pickup_message(item_type_id)
-            if message ~= nil then
-                show_message(message)    
+        if character.can_pick_up_item(character_id, item_id) then
+            local item_type_id = item.get_item_type(item_id)
+            if item_type.can_pick_up(item_type_id) then
+                sfx.trigger(item_type.get_pickup_sfx(item_type_id))
+                room.set_cell_item(next_room_id, next_column, next_row, nil)
+                character.add_item(character_id, item_id)
+                local message = item_type.get_pickup_message(item_type_id)
+                if message ~= nil then
+                    show_message(message)
+                end
+                return
             end
+        else
+            sfx.trigger(sfx.GENERIC_FAIL)
             return
         end
     end

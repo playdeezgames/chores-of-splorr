@@ -67,18 +67,18 @@ function M.remove_item_of_type(character_id, item_type_id)
     M.remove_item(character_id, item_id)
 end
 function M.set_statistic(character_id, statistic_type_id, statistic_value)
-    local creature_data = data[character_id]
-    if creature_data.statistics == nil then
-        creature_data.statistics = {}
+    local character_data = data[character_id]
+    if character_data.statistics == nil then
+        character_data.statistics = {}
     end
-    creature_data.statistics[statistic_type_id] = statistic_value
+    character_data.statistics[statistic_type_id] = statistic_value
 end
 function M.get_statistic(character_id, statistic_type_id)
-    local creature_data = data[character_id]
-    if creature_data.statistics == nil then
+    local character_data = data[character_id]
+    if character_data.statistics == nil then
         return nil
     end
-    return creature_data.statistics[statistic_type_id]
+    return character_data.statistics[statistic_type_id]
 end
 function M.do_move(character_id)
     local character_type_id = M.get_character_type(character_id)
@@ -90,5 +90,17 @@ end
 function M.change_statistic(character_id, statistic_type_id, delta)
     M.set_statistic(character_id, statistic_type_id, M.get_statistic(character_id, statistic_type_id) + delta)
     return M.get_statistic(character_id, statistic_type_id)
+end
+function M.can_pick_up_item(character_id, item_id)
+    local character_type_id = M.get_character_type(character_id)
+    local pick_up_handler = character_type.get_can_pick_up_item_handler(character_type_id)
+    if pick_up_handler ~= nil then
+        return pick_up_handler(character_id, item_id)
+    end
+    return true
+end
+function M.get_inventory_size(character_id)
+    local character_data = data[character_id]
+    return #character_data.inventory
 end
 return M

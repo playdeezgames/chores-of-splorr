@@ -26,6 +26,11 @@ local function show_message(text)
 			grimoire.MSG_SHOW_MESSAGE, 
 			{text = text.."\n\n<SPACE> to close."})
 end
+character_type.set_can_pick_up_item_handler(
+	character_type.HERO,
+	function(character_id, _)
+		return character.get_inventory_size(character_id) < character.get_statistic(character_id, statistic_type.INVENTORY_SIZE)
+	end)
 feature_type.set_can_interact(
     feature_type.DIRT_PILE, 
     function(feature_id, character_id, context)

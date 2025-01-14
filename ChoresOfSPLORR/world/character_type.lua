@@ -18,4 +18,10 @@ end
 function M.set_move_handler(character_type_id, move_handler)
     descriptors[character_type_id].move_handler = move_handler
 end
+function M.get_can_pick_up_item_handler(character_type_id)
+    return descriptors[character_type_id].can_pick_up_item_handler
+end
+function M.set_can_pick_up_item_handler(character_type_id, can_pick_up_item_handler)
+    descriptors[character_type_id].can_pick_up_item_handler = can_pick_up_item_handler
+end
 return M
