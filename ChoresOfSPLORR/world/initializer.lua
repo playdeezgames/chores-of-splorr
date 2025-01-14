@@ -250,6 +250,7 @@ local function initialize_starting_room()
 	room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, character_id)
 	character.set_statistic(character_id, statistic_type.MOVES, 0)
 	character.set_statistic(character_id, statistic_type.SCORE, 0)
+	character.set_statistic(character_id, statistic_type.INVENTORY_SIZE, 16)
 	avatar.set_character(character_id)
 
 	local dirt_features = place_features(
