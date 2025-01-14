@@ -22,8 +22,8 @@ math.randomseed(100000 * (socket.gettime() % 1))
 
 local function show_message(text)
 	msg.post(
-			grimoire.URL_SCENE, 
-			grimoire.MSG_SHOW_MESSAGE, 
+			grimoire.URL_SCENE,
+			grimoire.MSG_SHOW_MESSAGE,
 			{text = text.."\n\n<SPACE> to close."})
 end
 character_type.set_can_pick_up_item_handler(
@@ -32,7 +32,7 @@ character_type.set_can_pick_up_item_handler(
 		return character.get_inventory_size(character_id) < character.get_statistic(character_id, statistic_type.INVENTORY_SIZE)
 	end)
 feature_type.set_can_interact(
-    feature_type.DIRT_PILE, 
+    feature_type.DIRT_PILE,
     function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
 			if context.interaction == interaction_type.PUSH then
@@ -56,7 +56,7 @@ feature_type.set_can_interact(
         return next_feature_type_id == feature_type.DUST_BIN
     end)
 feature_type.set_interact(
-    feature_type.DIRT_PILE, 
+    feature_type.DIRT_PILE,
     function(feature_id, character_id, context)
         room.set_cell_feature(context.room_id, context.column, context.row, nil)
 		local item_id = feature.get_item(feature_id)
@@ -95,8 +95,8 @@ feature_type.set_interact(
         end
     end)
 feature_type.set_can_interact(
-    feature_type.SIGN, 
-    function(_, _, context) 
+    feature_type.SIGN,
+    function(_, _, context)
         return context.interaction == interaction_type.PUSH
     end)
 feature_type.set_interact(
@@ -105,8 +105,8 @@ feature_type.set_interact(
 		show_message(feature.get_metadata(feature_id, metadata_type.MESSAGE))
 	end)
 feature_type.set_can_interact(
-	feature_type.DUST_BIN, 
-	function(_, _, context) 
+	feature_type.DUST_BIN,
+	function(_, _, context)
 		return context.interaction == interaction_type.PUSH
 	end)
 feature_type.set_interact(
@@ -144,6 +144,36 @@ character_type.set_move_handler(
 			room.set_cell_character(room_id, next_column, next_row, character_id)
 		end
 		sfx.trigger(sfx.DUST_BUNNY_TELEPORT)
+	end)
+feature_type.set_can_interact(
+	feature_type.CUPBOARD,
+	function(_, _, context)
+		return context.interaction == interaction_type.PUSH
+	end)
+feature_type.set_interact(
+	feature_type.CUPBOARD,
+	function(_, character_id, _)
+		if character.has_item_type(character_id, item_type.CLEAN_DISH) then
+			character.remove_item_of_type(character_id, item_type.CLEAN_DISH)
+			character.change_statistic(character_id, statistic_type.SCORE, 10)
+		else
+			show_message("This is a CUPBOARD.\n\nYou use this to store CLEAN DISHES.")
+		end
+	end)
+feature_type.set_can_interact(
+	feature_type.DISH_WASHER,
+	function(_, _, context)
+		return context.interaction == interaction_type.PUSH
+	end)
+feature_type.set_interact(
+	feature_type.DISH_WASHER,
+	function(_, character_id, _)
+		if character.has_item_type(character_id, item_type.DIRTY_DISH) then
+			character.remove_item_of_type(character_id, item_type.DIRTY_DISH)
+			character.add_item(character_id, item.create(item_type.CLEAN_DISH))
+		else
+			show_message("This is a DISH WASHER.\n\n(Yes, I know it looks like a WASHING MACHINE.)\n\nYou use this to make a DIRTY DISH into a CLEAN DISH.")
+		end
 	end)
 
 
@@ -259,9 +289,9 @@ local function initialize_starting_room()
 	avatar.set_character(character_id)
 
 	local dirt_features = place_features(
-		room_id, 
-		feature_type.DIRT_PILE, 
-		25, 
+		room_id,
+		feature_type.DIRT_PILE,
+		25,
 		function(feature_id)
 			feature.set_statistic(feature_id, statistic_type.INTENSITY, 1)
 		end)
@@ -269,7 +299,7 @@ local function initialize_starting_room()
 	local Key_item_id = item.create(item_type.KEY)
 	local dirt_feature_id = dirt_features[math.random(1, #dirt_features)]
 	feature.set_item(dirt_feature_id, Key_item_id)
-	
+
 	return room_id, character_id
 end
 
@@ -292,9 +322,9 @@ local function initialize_second_room(starting_room_id)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
 
 	place_items(
-		room_id, 
+		room_id,
 		item_type.DIRTY_DISH,
-		25, 
+		25,
 		function(item_id) end)
 
 	return room_id
