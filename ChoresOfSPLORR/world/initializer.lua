@@ -190,7 +190,7 @@ local function create_room_feature(room_id, column, row, feature_type_id)
 end
 
 local function place_item(room_id, item_type_id)
-	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
+	local column, row = math.random(2, room.get_cell_columns(room_id) - 1), math.random(2, room.get_cell_rows(room_id) - 1)
 	local terrain_id = room.get_cell_terrain(room_id, column, row)
 	if not terrain.is_passable(terrain_id) then
 		return nil
@@ -320,6 +320,8 @@ local function initialize_second_room(starting_room_id)
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
+	local sign_feature_id = create_room_feature(room_id, 3, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
+	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "Who left all of these DIRTY DISHES on the floor?\n\nWhy aren't there any TABLES in this room?\n\nSo many questions....")
 
 	place_items(
 		room_id,
