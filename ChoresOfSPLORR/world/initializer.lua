@@ -152,10 +152,17 @@ feature_type.set_can_interact(
 	end)
 feature_type.set_interact(
 	feature_type.CUPBOARD,
-	function(_, character_id, _)
+	function(feature_id, character_id, _)
 		if character.has_item_type(character_id, item_type.CLEAN_DISH) then
 			character.remove_item_of_type(character_id, item_type.CLEAN_DISH)
 			character.change_statistic(character_id, statistic_type.SCORE, 10)
+			local dishes_remaining = feature.change_statistic(feature_id, statistic_type.DISHES_REMAINING, -1)
+			if dishes_remaining < 1 then
+				local key_item_id = item.create(item_type.KEY)
+				local room_id = character.get_room(character_id)
+				room.set_cell_item(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, key_item_id)
+				show_message("As you put away the last DISH,\n\na KEY magically appears.\n\nWTH?")
+			end
 		else
 			show_message("This is a CUPBOARD.\n\nYou use this to store CLEAN DISHES.")
 		end
@@ -303,6 +310,8 @@ local function initialize_starting_room()
 	return room_id, character_id
 end
 
+local TOTAL_DISHES = 25
+
 local function initialize_second_room(starting_room_id)
 	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
 	for column = 1, grimoire.BOARD_COLUMNS do
@@ -314,27 +323,53 @@ local function initialize_second_room(starting_room_id)
 			room.set_cell_terrain(room_id, column, row, terrain_id)
 		end
 	end
+
+	room.set_cell_terrain(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, terrain.CLOSED_DOOR)
+	room.set_cell_lock_type(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, lock_type.COMMON)
+
 	room.set_cell_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.OPEN_DOOR)
 	room.set_cell_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
 	room.set_cell_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
 
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
-	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
+	local cupboard_feature_id = create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
+	feature.set_statistic(cupboard_feature_id, statistic_type.DISHES_REMAINING, TOTAL_DISHES)
 	local sign_feature_id = create_room_feature(room_id, 3, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
 	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "Who left all of these DIRTY DISHES on the floor?\n\nWhy aren't there any TABLES in this room?\n\nSo many questions....")
 
 	place_items(
 		room_id,
 		item_type.DIRTY_DISH,
-		25,
-		function(item_id) end)
+		TOTAL_DISHES,
+		function(_) end)
+
+	return room_id
+end
+
+local function initialize_third_room(second_room_id)
+	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
+	for column = 1, grimoire.BOARD_COLUMNS do
+		for row = 1, grimoire.BOARD_ROWS do
+			local terrain_id = terrain.FLOOR
+			if column == 1 or row == 1 or column == grimoire.BOARD_COLUMNS or row == grimoire.BOARD_ROWS then
+				terrain_id = terrain.WALL
+			end
+			room.set_cell_terrain(room_id, column, row, terrain_id)
+		end
+	end
+	room.set_cell_terrain(room_id, grimoire.BOARD_CENTER_X, 1, terrain.OPEN_DOOR)
+	room.set_cell_teleport(second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, room_id, grimoire.BOARD_CENTER_X, 2)
+	room.set_cell_teleport(room_id, grimoire.BOARD_CENTER_X, 1, second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS - 1)
+
+
 
 	return room_id
 end
 
 function M.initialize()
 	local starting_room_id = initialize_starting_room()
-	initialize_second_room(starting_room_id)
+	local second_room_id = initialize_second_room(starting_room_id)
+	initialize_third_room(second_room_id)
 end
 
 return M
