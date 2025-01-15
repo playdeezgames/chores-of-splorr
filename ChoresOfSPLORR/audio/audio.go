@@ -66,3 +66,19 @@ components {
   id: "DIRTY_DISH"
   component: "/assets/sfx/DIRTY_DISH.wav"
 }
+components {
+  id: "WARDROBE"
+  component: "/assets/sfx/WARDROBE.wav"
+}
+components {
+  id: "WASHING_MACHINE"
+  component: "/assets/sfx/WASHING_MACHINE.wav"
+}
+components {
+  id: "FOLDING_TABLE"
+  component: "/assets/sfx/FOLDING_TABLE.wav"
+}
+components {
+  id: "SOAP_DISPENSER"
+  component: "/assets/sfx/SOAP_DISPENSER.wav"
+}

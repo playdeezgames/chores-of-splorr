@@ -4,6 +4,7 @@ M.KEY = "KEY"
 M.BROOM = "BROOM"
 M.DIRTY_DISH = "DIRTY_DISH"
 M.CLEAN_DISH = "CLEAN_DISH"
+
 local descriptors = {
     [M.KEY] = {
         tile = 4,

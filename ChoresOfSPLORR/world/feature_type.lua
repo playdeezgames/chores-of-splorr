@@ -6,6 +6,10 @@ M.DUST_BIN = "DUST_BIN"
 M.SIGN = "SIGN"
 M.DISH_WASHER = "DISH_WASHER"
 M.CUPBOARD = "CUPBOARD"
+M.WARDROBE = "WARDROBE"
+M.WASHING_MACHINE = "WASHING_MACHINE"
+M.SOAP_DISPENSER = "SOAP_DISPENSER"
+M.FOLDING_TABLE = "FOLDING_TABLE"
 
 local descriptors = {
     [M.DIRT_PILE] = {
@@ -28,6 +32,22 @@ local descriptors = {
     [M.CUPBOARD] = {
         tile = 15,
         success_sfx=sfx.CUPBOARD
+    },
+    [M.WARDROBE] = {
+        tile = 15,
+        success_sfx=sfx.WARDROBE
+    },
+    [M.WASHING_MACHINE] = {
+        tile = 16,
+        success_sfx=sfx.WASHING_MACHINE
+    },
+    [M.SOAP_DISPENSER] = {
+        tile = 17,
+        success_sfx=sfx.SOAP_DISPENSER
+    },
+    [M.FOLDING_TABLE] = {
+        tile = 24,
+        success_sfx=sfx.FOLDING_TABLE
     }
 }
 function M.get_tile(feature_type_id)
