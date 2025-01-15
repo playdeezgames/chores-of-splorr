@@ -82,3 +82,7 @@ components {
   id: "SOAP_DISPENSER"
   component: "/assets/sfx/SOAP_DISPENSER.wav"
 }
+components {
+  id: "PICK_UP_LAUNDRY_BASKET"
+  component: "/assets/sfx/PICK_UP_LAUNDRY_BASKET.wav"
+}

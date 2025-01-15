@@ -4,6 +4,7 @@ M.KEY = "KEY"
 M.BROOM = "BROOM"
 M.DIRTY_DISH = "DIRTY_DISH"
 M.CLEAN_DISH = "CLEAN_DISH"
+M.LAUNDRY_BASKET = "LAUNDRY_BASKET"
 
 local descriptors = {
     [M.KEY] = {
@@ -28,6 +29,12 @@ local descriptors = {
         tile = 14,
         carryable = true,
         pickup_sfx_id = nil,
+        pickup_message = nil
+    },
+    [M.LAUNDRY_BASKET] = {
+        tile = 18,
+        carryable = true,
+        pickup_sfx_id = sfx.PICK_UP_LAUNDRY_BASKET,
         pickup_message = nil
     }
 }

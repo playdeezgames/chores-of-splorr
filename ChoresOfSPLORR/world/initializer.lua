@@ -365,6 +365,7 @@ local function initialize_third_room(second_room_id)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
+	create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
 
 	return room_id
 end
