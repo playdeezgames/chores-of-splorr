@@ -18,6 +18,7 @@ local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
 local TOTAL_DISHES = 25
 local TOTAL_CLOTHES = 25
+local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
@@ -28,10 +29,141 @@ local function show_message(text)
 			grimoire.MSG_SHOW_MESSAGE,
 			{text = text.."\n\n<SPACE> to close."})
 end
+local function create_room_item(room_id, column, row, item_type_id)
+	local item_id = item.create(item_type_id)
+	room.set_cell_item(room_id, column, row, item_id)
+	return item_id
+end
+local function create_room_feature(room_id, column, row, feature_type_id)
+	local feature_id = feature.create(feature_type_id)
+	room.set_cell_feature(room_id, column, row, feature_id)
+	return feature_id
+end
+local function place_item(room_id, item_type_id)
+	local column, row = math.random(2, room.get_cell_columns(room_id) - 1), math.random(2, room.get_cell_rows(room_id) - 1)
+	local terrain_id = room.get_cell_terrain(room_id, column, row)
+	if not terrain.is_passable(terrain_id) then
+		return nil
+	end
+	if room.get_cell_item(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_character(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_feature(room_id, column, row) ~= nil then
+		return nil
+	end
+	local item_id = item.create(item_type_id)
+	room.set_cell_item(room_id, column, row, item_id)
+	return item_id
+end
+local function place_feature(room_id, feature_type_id)
+	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
+	local terrain_id = room.get_cell_terrain(room_id, column, row)
+	if not terrain.is_passable(terrain_id) then
+		return nil
+	end
+	if room.get_cell_item(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_character(room_id, column, row) ~= nil then
+		return nil
+	end
+	if room.get_cell_feature(room_id, column, row) ~= nil then
+		return nil
+	end
+	local feature_id = feature.create(feature_type_id)
+	room.set_cell_feature(room_id, column, row, feature_id)
+	return feature_id
+end
+local function place_items(room_id, item_type_id, count, predicate)
+	local result = {}
+	while count > 0 do
+		local item_id = place_item(room_id, item_type_id)
+		if item_id ~= nil then
+			table.insert(result, item_id)
+			count = count - 1
+			if predicate ~= nil then
+				predicate(item_id)
+			end
+		end
+	end
+	return result
+end
+local function place_features(room_id, feature_type_id, count, predicate)
+	local result = {}
+	while count > 0 do
+		local feature_id = place_feature(room_id, feature_type_id)
+		if feature_id ~= nil then
+			table.insert(result, feature_id)
+			count = count - 1
+			if predicate ~= nil then
+				predicate(feature_id)
+			end
+		end
+	end
+	return result
+end
 character_type.set_can_pick_up_item_handler(
 	character_type.HERO,
-	function(character_id, _)
-		return character.get_inventory_size(character_id) < character.get_statistic(character_id, statistic_type.INVENTORY_SIZE)
+	function(character_id, item_id)
+		if character.get_inventory_size(character_id) >= character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) then
+			return false
+		end
+		local item_type_id = item.get_item_type(item_id)
+		if item_type_id == item_type.SOILED_SHIRT then
+			if not character.has_item_type(character_id, item_type.LAUNDRY_BASKET) then
+				return false
+			end
+		end
+		return true
+	end)
+feature_type.set_can_interact(
+	feature_type.WASHING_MACHINE,
+	function(feature_id, character_id, context)
+		if context.interaction ~= interaction_type.PUSH then
+			return false
+		end
+		local state = feature.get_metadata(feature_id, metadata_type.STATE)
+		if state == metadata_type.STATE_LOADING then
+			if character.has_item_type(character_id, item_type.SOILED_SHIRT) then
+				return true
+			end
+			if character.has_item_type(character_id, item_type.SOAP) then
+				return true
+			end
+		end
+		show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
+		return true
+	end)
+feature_type.set_interact(
+	feature_type.WASHING_MACHINE,
+	function(feature_id, character_id, context)
+		local state = feature.get_metadata(feature_id, metadata_type.STATE)
+		if state == metadata_type.STATE_LOADING then
+			if character.has_item_type(character_id, item_type.SOILED_SHIRT) then
+				local item_id
+				repeat
+					item_id = character.remove_item_of_type(character_id, item_type.SOILED_SHIRT)
+					if item_id ~= nil then
+						local intensity = feature.change_statistic(feature_id, statistic_type.INTENSITY, 1)
+						if intensity > WASHING_MACHINE_MAXIMUM_INTENSITY then
+							place_items(character.get_room(character_id), item_type.SOILED_SHIRT, intensity, function(_) end)
+							show_message("You have overloaded the WASHING_MACHINE!\n\nAs a result, it has exploded, \n\nthrowing SOILED SHIRTS all about the room.")
+							feature.set_statistic(feature_id, statistic_type.INTENSITY, 0)
+							return
+						end
+					end
+				until item_id == nil
+				return
+			end
+			if character.has_item_type(character_id, item_type.SOAP) then
+				--remove 1 soap from character inventory
+				--start washing machine
+				return
+			end
+		end
 	end)
 feature_type.set_can_interact(
     feature_type.DIRT_PILE,
@@ -185,89 +317,6 @@ feature_type.set_interact(
 		end
 	end)
 
-
-local function create_room_item(room_id, column, row, item_type_id)
-	local item_id = item.create(item_type_id)
-	room.set_cell_item(room_id, column, row, item_id)
-	return item_id
-end
-
-local function create_room_feature(room_id, column, row, feature_type_id)
-	local feature_id = feature.create(feature_type_id)
-	room.set_cell_feature(room_id, column, row, feature_id)
-	return feature_id
-end
-
-local function place_item(room_id, item_type_id)
-	local column, row = math.random(2, room.get_cell_columns(room_id) - 1), math.random(2, room.get_cell_rows(room_id) - 1)
-	local terrain_id = room.get_cell_terrain(room_id, column, row)
-	if not terrain.is_passable(terrain_id) then
-		return nil
-	end
-	if room.get_cell_item(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_character(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_feature(room_id, column, row) ~= nil then
-		return nil
-	end
-	local item_id = item.create(item_type_id)
-	room.set_cell_item(room_id, column, row, item_id)
-	return item_id
-end
-
-local function place_feature(room_id, feature_type_id)
-	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
-	local terrain_id = room.get_cell_terrain(room_id, column, row)
-	if not terrain.is_passable(terrain_id) then
-		return nil
-	end
-	if room.get_cell_item(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_character(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_feature(room_id, column, row) ~= nil then
-		return nil
-	end
-	local feature_id = feature.create(feature_type_id)
-	room.set_cell_feature(room_id, column, row, feature_id)
-	return feature_id
-end
-
-local function place_items(room_id, item_type_id, count, predicate)
-	local result = {}
-	while count > 0 do
-		local item_id = place_item(room_id, item_type_id)
-		if item_id ~= nil then
-			table.insert(result, item_id)
-			count = count - 1
-			if predicate ~= nil then
-				predicate(item_id)
-			end
-		end
-	end
-	return result
-end
-
-local function place_features(room_id, feature_type_id, count, predicate)
-	local result = {}
-	while count > 0 do
-		local feature_id = place_feature(room_id, feature_type_id)
-		if feature_id ~= nil then
-			table.insert(result, feature_id)
-			count = count - 1
-			if predicate ~= nil then
-				predicate(feature_id)
-			end
-		end
-	end
-	return result
-end
-
 local function initialize_starting_room()
 	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
 	for column = 1, grimoire.BOARD_COLUMNS do
@@ -361,7 +410,10 @@ local function initialize_third_room(second_room_id)
 	room.set_cell_teleport(second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, room_id, grimoire.BOARD_CENTER_X, 2)
 	room.set_cell_teleport(room_id, grimoire.BOARD_CENTER_X, 1, second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS - 1)
 
-	create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
+	local washing_machine_feature_id = create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
+	feature.set_metadata(washing_machine_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
+	feature.set_statistic(washing_machine_feature_id, statistic_type.INTENSITY, 0)
+
 	create_room_feature(room_id, 2, 3, feature_type.DRYER)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
@@ -375,7 +427,7 @@ local function initialize_third_room(second_room_id)
 		function(_) end)
 
 	--PUT AVATAR INTO ROOM FOR TESTING!
-	--room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
+	room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
 
 	return room_id
 end

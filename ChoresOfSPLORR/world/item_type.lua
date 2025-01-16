@@ -10,6 +10,7 @@ M.SOILED_SHIRT = "SOILED_SHIRT"
 M.WASHED_SHIRT = "WASHED_SHIRT"
 M.DRY_SHIRT = "DRY_SHIRT"
 M.FOLDED_SHIRT = "FOLDED_SHIRT"
+M.SOAP = "SOAP"
 
 local descriptors = {
     [M.KEY] = {
@@ -62,6 +63,12 @@ local descriptors = {
     },
     [M.FOLDED_SHIRT] = {
         tile = 22,
+        carryable = true,
+        pickup_sfx_id = nil,
+        pickup_message = nil
+    },
+    [M.SOAP] = {
+        tile = 23,
         carryable = true,
         pickup_sfx_id = nil,
         pickup_message = nil

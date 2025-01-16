@@ -1,3 +1,6 @@
 local M = {}
 M.MESSAGE = "MESSAGE"
+M.STATE = "STATE"
+
+M.STATE_LOADING = "LOADING"
 return M

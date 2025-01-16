@@ -63,8 +63,9 @@ function M.remove_item(character_id, item_id)
 end
 function M.remove_item_of_type(character_id, item_type_id)
     local item_id = M.find_item_of_type(character_id, item_type_id)
-    if item_id == nil then return end
+    if item_id == nil then return nil end
     M.remove_item(character_id, item_id)
+    return item_id
 end
 function M.set_statistic(character_id, statistic_type_id, statistic_value)
     local character_data = data[character_id]
@@ -93,9 +94,9 @@ function M.change_statistic(character_id, statistic_type_id, delta)
 end
 function M.can_pick_up_item(character_id, item_id)
     local character_type_id = M.get_character_type(character_id)
-    local pick_up_handler = character_type.get_can_pick_up_item_handler(character_type_id)
-    if pick_up_handler ~= nil then
-        return pick_up_handler(character_id, item_id)
+    local can_pick_up_handler = character_type.get_can_pick_up_item_handler(character_type_id)
+    if can_pick_up_handler ~= nil then
+        return can_pick_up_handler(character_id, item_id)
     end
     return true
 end
