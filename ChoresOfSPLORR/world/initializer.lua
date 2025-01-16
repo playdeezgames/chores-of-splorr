@@ -133,8 +133,10 @@ feature_type.set_can_interact(
 			if character.has_item_type(character_id, item_type.SOAP) then
 				return true
 			end
+			show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
+		elseif state == metadata_type.STATE_WASHING then
+			show_message("The WASHING MACHINE is busy\n\nmaking SOILED SHIRTS into clean WET SHIRTS.")
 		end
-		show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
 		return true
 	end)
 feature_type.set_interact(
@@ -159,8 +161,13 @@ feature_type.set_interact(
 				return
 			end
 			if character.has_item_type(character_id, item_type.SOAP) then
-				--remove 1 soap from character inventory
-				--start washing machine
+				local intensity = feature.get_statistic(feature_id, statistic_type.INTENSITY)
+				if intensity == 0 then
+					show_message("It is best to add SOILED SHIRTS prior to adding SOAP.")
+					return
+				end
+				character.remove_item_of_type(character_id, item_type.SOAP)
+				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_WASHING)
 				return
 			end
 		end
