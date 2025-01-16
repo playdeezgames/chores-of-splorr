@@ -119,6 +119,17 @@ character_type.set_can_pick_up_item_handler(
 		end
 		return true
 	end)
+feature_type.set_do_move_handler(
+	feature_type.WASHING_MACHINE, 
+	function(feature_id)	
+		if feature.get_metadata(feature_id, metadata_type.STATE) == metadata_type.STATE_WASHING then
+			local timer = feature.change_statistic(feature_id, statistic_type.TIMER, -1)			
+			if timer == 0 then
+				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_CLEAN)
+				--TODO: trigger sfx that washing machine is done.
+			end
+		end
+	end)
 feature_type.set_can_interact(
 	feature_type.WASHING_MACHINE,
 	function(feature_id, character_id, context)
@@ -168,6 +179,7 @@ feature_type.set_interact(
 				end
 				character.remove_item_of_type(character_id, item_type.SOAP)
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_WASHING)
+				feature.set_statistic(feature_id, statistic_type.TIMER, 20)
 				return
 			end
 		end
@@ -439,6 +451,7 @@ local function initialize_third_room(second_room_id)
 	local washing_machine_feature_id = create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
 	feature.set_metadata(washing_machine_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.INTENSITY, 0)
+	feature.set_statistic(washing_machine_feature_id, statistic_type.TIMER, 0)
 
 	create_room_feature(room_id, 2, 3, feature_type.DRYER)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)

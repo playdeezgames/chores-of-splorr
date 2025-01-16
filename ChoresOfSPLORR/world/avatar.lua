@@ -122,6 +122,10 @@ local function move_avatar(delta_column, delta_row)
     for _, other_character_id in ipairs(other_characters) do
         character.do_move(other_character_id)
     end
+    local current_features = room.get_all_features(room_id)
+    for _, current_feature_id in ipairs(current_features) do
+        feature.do_move(current_feature_id)
+    end
 end
 function M.set_character(character_id)
     data.character_id = character_id

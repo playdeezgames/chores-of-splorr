@@ -75,4 +75,11 @@ function M.change_statistic(feature_id, statistic_type_id, delta)
     M.set_statistic(feature_id, statistic_type_id, M.get_statistic(feature_id, statistic_type_id) + delta)
     return M.get_statistic(feature_id, statistic_type_id)
 end
+function M.do_move(feature_id)
+    local feature_type_id = M.get_feature_type(feature_id)
+    local handler = feature_type.get_do_move_handler(feature_type_id)
+    if handler ~= nil then
+        handler(feature_id)
+    end
+end
 return M

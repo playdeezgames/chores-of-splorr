@@ -76,4 +76,10 @@ end
 function M.get_success_sfx(feature_type_id)
     return descriptors[feature_type_id].success_sfx
 end
+function M.get_do_move_handler(feature_type_id)
+    return descriptors[feature_type_id].do_move_handler
+end
+function M.set_do_move_handler(feature_type_id, do_move_handler)
+    descriptors[feature_type_id].do_move_handler = do_move_handler
+end
 return M

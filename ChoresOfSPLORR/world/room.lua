@@ -97,4 +97,16 @@ function M.get_other_characters(room_id, character_id)
 	end
 	return result
 end
+function M.get_all_features(room_id)
+	local result = {}
+	for column = 1, M.get_cell_columns(room_id) do
+		for row = 1, M.get_cell_rows(room_id) do
+			local candidate = M.get_cell_feature(room_id, column, row)
+			if candidate ~= nil then
+				table.insert(result, candidate)
+			end
+		end
+	end
+	return result
+end
 return M
