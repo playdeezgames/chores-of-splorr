@@ -166,6 +166,25 @@ feature_type.set_interact(
 		end
 	end)
 feature_type.set_can_interact(
+	feature_type.SOAP_DISPENSER, 
+	function(feature_id, character_id, context) 
+		if context.interaction ~= interaction_type.PUSH then
+			return false
+		end
+		if character.has_item_type(character_id, item_type.SOAP) then
+			show_message("Sorry, one SOAP per customer.\n\n(How does it know?)")
+			return false
+		end
+		return true
+	end)
+feature_type.set_interact(
+	feature_type.SOAP_DISPENSER, 
+	function(feature_id, character_id, context)
+		local item_id = item.create(item_type.SOAP)
+		character.add_item(character_id, item_id)
+		show_message("The SOAP DISPENSER gives you SOAP.")
+	end)
+feature_type.set_can_interact(
     feature_type.DIRT_PILE,
     function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
