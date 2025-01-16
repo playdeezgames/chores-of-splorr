@@ -10,6 +10,7 @@ M.WARDROBE = "WARDROBE"
 M.WASHING_MACHINE = "WASHING_MACHINE"
 M.SOAP_DISPENSER = "SOAP_DISPENSER"
 M.FOLDING_TABLE = "FOLDING_TABLE"
+M.DRYER = "DRYER"
 
 local descriptors = {
     [M.DIRT_PILE] = {
@@ -40,6 +41,10 @@ local descriptors = {
     [M.WASHING_MACHINE] = {
         tile = 16,
         success_sfx=sfx.WASHING_MACHINE
+    },
+    [M.DRYER] = {
+        tile = 16,
+        success_sfx=sfx.DRYER
     },
     [M.SOAP_DISPENSER] = {
         tile = 17,

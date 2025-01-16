@@ -1,10 +1,15 @@
 local sfx = require("game.sfx")
 local M = {}
+
 M.KEY = "KEY"
 M.BROOM = "BROOM"
 M.DIRTY_DISH = "DIRTY_DISH"
 M.CLEAN_DISH = "CLEAN_DISH"
 M.LAUNDRY_BASKET = "LAUNDRY_BASKET"
+M.SOILED_SHIRT = "SOILED_SHIRT"
+M.WASHED_SHIRT = "WASHED_SHIRT"
+M.DRY_SHIRT = "DRY_SHIRT"
+M.FOLDED_SHIRT = "FOLDED_SHIRT"
 
 local descriptors = {
     [M.KEY] = {
@@ -35,6 +40,30 @@ local descriptors = {
         tile = 18,
         carryable = true,
         pickup_sfx_id = sfx.PICK_UP_LAUNDRY_BASKET,
+        pickup_message = nil
+    },
+    [M.SOILED_SHIRT] = {
+        tile = 19,
+        carryable = true,
+        pickup_sfx_id = nil,
+        pickup_message = nil
+    },
+    [M.WASHED_SHIRT] = {
+        tile = 20,
+        carryable = true,
+        pickup_sfx_id = nil,
+        pickup_message = nil
+    },
+    [M.DRY_SHIRT] = {
+        tile = 21,
+        carryable = true,
+        pickup_sfx_id = nil,
+        pickup_message = nil
+    },
+    [M.FOLDED_SHIRT] = {
+        tile = 22,
+        carryable = true,
+        pickup_sfx_id = nil,
         pickup_message = nil
     }
 }

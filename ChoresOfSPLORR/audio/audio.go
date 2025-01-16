@@ -86,3 +86,7 @@ components {
   id: "PICK_UP_LAUNDRY_BASKET"
   component: "/assets/sfx/PICK_UP_LAUNDRY_BASKET.wav"
 }
+components {
+  id: "DRYER"
+  component: "/assets/sfx/DRYER.wav"
+}

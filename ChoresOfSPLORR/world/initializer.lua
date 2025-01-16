@@ -16,6 +16,8 @@ local sfx              = require("game.sfx")
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
+local TOTAL_DISHES = 25
+local TOTAL_CLOTHES = 25
 
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
@@ -310,8 +312,6 @@ local function initialize_starting_room()
 	return room_id, character_id
 end
 
-local TOTAL_DISHES = 25
-
 local function initialize_second_room(starting_room_id)
 	local room_id = room.create(grimoire.BOARD_COLUMNS, grimoire.BOARD_ROWS)
 	for column = 1, grimoire.BOARD_COLUMNS do
@@ -362,10 +362,20 @@ local function initialize_third_room(second_room_id)
 	room.set_cell_teleport(room_id, grimoire.BOARD_CENTER_X, 1, second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS - 1)
 
 	create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
+	create_room_feature(room_id, 2, 3, feature_type.DRYER)
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
 	create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
+
+	place_items(
+		room_id,
+		item_type.SOILED_SHIRT,
+		TOTAL_CLOTHES,
+		function(_) end)
+
+	--PUT AVATAR INTO ROOM FOR TESTING!
+	--room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
 
 	return room_id
 end

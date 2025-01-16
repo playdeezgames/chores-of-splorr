@@ -1,4 +1,3 @@
-local grimoire = require("game.grimoire")
 local M = {}
 M.BUMP = "BUMP"
 M.LOCKED = "LOCKED"
@@ -22,6 +21,7 @@ M.WASHING_MACHINE = "WASHING_MACHINE"
 M.SOAP_DISPENSER = "SOAP_DISPENSER"
 M.FOLDING_TABLE = "FOLDING_TABLE"
 M.PICK_UP_LAUNDRY_BASKET = "PICK_UP_LAUNDRY_BASKET"
+M.DRYER = "DRYER"
 
 function M.trigger(sfx_id)
     if sfx_id == nil then
