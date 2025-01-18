@@ -15,6 +15,7 @@ local metadata_type    = require("world.metadata_type")
 local sfx              = require("game.sfx")
 local utility = require "world.common.utility"
 local rooms_utility = require "world.rooms.utility"
+local characters_utility = require "world.characters.utility"
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
@@ -24,13 +25,6 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
-
-local function convert_character_item_type(character_id, item_type_from, item_type_to)
-	while character.has_item_type(character_id, item_type_from) do
-		character.remove_item_of_type(character_id, item_type_from)
-		character.add_item(character_id, item.create(item_type_to))
-	end
-end
 
 character_type.set_can_pick_up_item_handler(
 	character_type.HERO,
@@ -45,7 +39,7 @@ character_type.set_can_pick_up_item_handler(
 				return false
 			end
 			if character.has_item_type(character_id, item_type.WASHED_SHIRT) then
-				convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
+				characters_utility.convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
 				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
 			end
 		end
