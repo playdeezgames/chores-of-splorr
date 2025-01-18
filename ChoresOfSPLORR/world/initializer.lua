@@ -13,6 +13,7 @@ local statistic_type = require("world.statistic_type")
 local interaction_type = require("world.interaction_type")
 local metadata_type    = require("world.metadata_type")
 local sfx              = require("game.sfx")
+local utility = require "world.common.utility"
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
@@ -23,12 +24,6 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
-local function show_message(text)
-	msg.post(
-			grimoire.URL_SCENE,
-			grimoire.MSG_SHOW_MESSAGE,
-			{text = text.."\n\n<SPACE> to close."})
-end
 local function create_room_item(room_id, column, row, item_type_id)
 	local item_id = item.create(item_type_id)
 	room.set_cell_item(room_id, column, row, item_id)
@@ -121,12 +116,12 @@ character_type.set_can_pick_up_item_handler(
 		local item_type_id = item.get_item_type(item_id)
 		if item_type_id == item_type.SOILED_SHIRT then
 			if not character.has_item_type(character_id, item_type.LAUNDRY_BASKET) then
-				show_message("When dealing with laundry,\n\ntis best to use a LAUNDRY BASKET.")
+				utility.show_message("When dealing with laundry,\n\ntis best to use a LAUNDRY BASKET.")
 				return false
 			end
 			if character.has_item_type(character_id, item_type.WASHED_SHIRT) then
 				convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
-				show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
+				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
 			end
 		end
 		return true
@@ -181,20 +176,20 @@ feature_type.set_can_interact(
 			if character.has_item_type(character_id, item_type.SOAP) then
 				return true
 			end
-			show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
+			utility.show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
 			return false
 		elseif state == metadata_type.STATE_WASHING then
-			show_message("The WASHING MACHINE is busy\n\nmaking SOILED SHIRTS into clean WET SHIRTS.")
+			utility.show_message("The WASHING MACHINE is busy\n\nmaking SOILED SHIRTS into clean WET SHIRTS.")
 			return false
 		elseif state == metadata_type.STATE_CLEAN then
 			local has_inventory_space = character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) > character.get_inventory_size(character_id)
 			if not has_inventory_space then
-				show_message("Yer inventory is full!")
+				utility.show_message("Yer inventory is full!")
 				return false
 			end
 			local has_laundry_basket = character.has_item_type(character_id, item_type.LAUNDRY_BASKET)
 			if not has_laundry_basket then
-				show_message("You need a LAUNDRY BASKET!")
+				utility.show_message("You need a LAUNDRY BASKET!")
 				return false
 			end
 			return true
@@ -214,7 +209,7 @@ feature_type.set_interact(
 						local intensity = feature.change_statistic(feature_id, statistic_type.INTENSITY, 1)
 						if intensity > WASHING_MACHINE_MAXIMUM_INTENSITY then
 							place_items(character.get_room(character_id), item_type.SOILED_SHIRT, intensity, function(_) end)
-							show_message("You have overloaded the WASHING_MACHINE!\n\nAs a result, it has exploded, \n\nthrowing SOILED SHIRTS all about the room.")
+							utility.show_message("You have overloaded the WASHING_MACHINE!\n\nAs a result, it has exploded, \n\nthrowing SOILED SHIRTS all about the room.")
 							feature.set_statistic(feature_id, statistic_type.INTENSITY, 0)
 							return
 						end
@@ -225,7 +220,7 @@ feature_type.set_interact(
 			if character.has_item_type(character_id, item_type.SOAP) then
 				local intensity = feature.get_statistic(feature_id, statistic_type.INTENSITY)
 				if intensity == 0 then
-					show_message("It is best to add SOILED SHIRTS prior to adding SOAP.")
+					utility.show_message("It is best to add SOILED SHIRTS prior to adding SOAP.")
 					return
 				end
 				character.remove_item_of_type(character_id, item_type.SOAP)
@@ -250,7 +245,7 @@ feature_type.set_interact(
 				character.add_item(character_id, item_id)
 			end
 			if has_soiled_shirts then
-				show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith SOILED SHIRTS\n\nmade the WET SHIRTS soiled.")
+				utility.show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith SOILED SHIRTS\n\nmade the WET SHIRTS soiled.")
 			end
 			if shirts_in_washer == 0 then
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
@@ -273,7 +268,7 @@ feature_type.set_can_interact(
 			return false
 		end
 		if character.has_item_type(character_id, item_type.SOAP) then
-			show_message("Sorry, one SOAP per customer.\n\n(How does it know?)")
+			utility.show_message("Sorry, one SOAP per customer.\n\n(How does it know?)")
 			return false
 		end
 		return true
@@ -283,14 +278,14 @@ feature_type.set_interact(
 	function(feature_id, character_id, context)
 		local item_id = item.create(item_type.SOAP)
 		character.add_item(character_id, item_id)
-		show_message("The SOAP DISPENSER gives you SOAP.")
+		utility.show_message("The SOAP DISPENSER gives you SOAP.")
 	end)
 feature_type.set_can_interact(
     feature_type.DIRT_PILE,
     function(feature_id, character_id, context)
         if not character.has_item_type(character_id, item_type.BROOM) then
 			if context.interaction == interaction_type.PUSH then
-				show_message("This is a pile of DIRT.\n\nYou can use a BROOM to sweep it towards a DUST BIN.")
+				utility.show_message("This is a pile of DIRT.\n\nYou can use a BROOM to sweep it towards a DUST BIN.")
 			end
             return false
         end
@@ -338,7 +333,7 @@ feature_type.set_interact(
 					if feature_item_id ~= nil then
 						character.add_item(dust_bunny_character_id, feature_item_id)
 					end
-					show_message("You piled the DIRT too high...\n\n...and summoned a dread DUST BUNNY!")
+					utility.show_message("You piled the DIRT too high...\n\n...and summoned a dread DUST BUNNY!")
 					sfx.trigger(sfx.DUST_BUNNY_SUMMON)
 				end
 			elseif next_feature_type_id == feature_type.DUST_BIN then
@@ -356,7 +351,7 @@ feature_type.set_can_interact(
 feature_type.set_interact(
 	feature_type.SIGN,
 	function(feature_id, _, _)
-		show_message(feature.get_metadata(feature_id, metadata_type.MESSAGE))
+		utility.show_message(feature.get_metadata(feature_id, metadata_type.MESSAGE))
 	end)
 feature_type.set_can_interact(
 	feature_type.DUST_BIN,
@@ -366,7 +361,7 @@ feature_type.set_can_interact(
 feature_type.set_interact(
 	feature_type.DUST_BIN,
 	function(_, _, _)
-		show_message("This is the DUST BIN.\n\nYou push DIRT in here.")
+		utility.show_message("This is the DUST BIN.\n\nYou push DIRT in here.")
 	end)
 character_type.set_move_handler(
 	character_type.DUST_BUNNY,
@@ -415,10 +410,10 @@ feature_type.set_interact(
 				local key_item_id = item.create(item_type.KEY)
 				local room_id = character.get_room(character_id)
 				room.set_cell_item(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, key_item_id)
-				show_message("As you put away the last DISH,\n\na KEY magically appears.\n\nWTH?")
+				utility.show_message("As you put away the last DISH,\n\na KEY magically appears.\n\nWTH?")
 			end
 		else
-			show_message("This is a CUPBOARD.\n\nYou use this to store CLEAN DISHES.")
+			utility.show_message("This is a CUPBOARD.\n\nYou use this to store CLEAN DISHES.")
 		end
 	end)
 feature_type.set_can_interact(
@@ -433,7 +428,7 @@ feature_type.set_interact(
 			character.remove_item_of_type(character_id, item_type.DIRTY_DISH)
 			character.add_item(character_id, item.create(item_type.CLEAN_DISH))
 		else
-			show_message("This is a DISH WASHER.\n\n(Yes, I know it looks like a WASHING MACHINE.)\n\nYou use this to make a DIRTY DISH into a CLEAN DISH.")
+			utility.show_message("This is a DISH WASHER.\n\n(Yes, I know it looks like a WASHING MACHINE.)\n\nYou use this to make a DIRTY DISH into a CLEAN DISH.")
 		end
 	end)
 

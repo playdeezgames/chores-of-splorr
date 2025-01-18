@@ -8,16 +8,10 @@ local sfx = require("game.sfx")
 local feature = require("world.feature")
 local interaction_type = require("world.interaction_type")
 local statistic_type   = require("world.statistic_type")
-local grimoire = require("game.grimoire")
+local utility = require "world.common.utility"
 local M = {}
 local data = {}
 
-local function show_message(text)
-	msg.post(
-			grimoire.URL_SCENE, 
-			grimoire.MSG_SHOW_MESSAGE, 
-			{text = text.."\n\n<SPACE> to close."})
-end
 local function move_avatar(delta_column, delta_row)
     local character_id = M.get_character()
     local room_id, column, row = character.get_room(character_id)
@@ -35,7 +29,7 @@ local function move_avatar(delta_column, delta_row)
         if lock_type_id ~= nil then
             local key_item_type_id = lock_type.get_key_item_type_id(lock_type_id)
             if not character.has_item_type(character_id, key_item_type_id) then
-                show_message(lock_type.get_locked_message(lock_type_id))
+                utility.show_message(lock_type.get_locked_message(lock_type_id))
                 sfx.trigger(lock_type.get_fail_sfx(lock_type_id))
                 return
             else
@@ -64,7 +58,7 @@ local function move_avatar(delta_column, delta_row)
                 character.add_item(character_id, item_id)
                 local message = item_type.get_pickup_message(item_type_id)
                 if message ~= nil then
-                    show_message(message)
+                    utility.show_message(message)
                 end
                 return
             end
