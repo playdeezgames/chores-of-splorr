@@ -25,72 +25,6 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
-local function place_item(room_id, item_type_id)
-	local column, row = math.random(2, room.get_cell_columns(room_id) - 1), math.random(2, room.get_cell_rows(room_id) - 1)
-	local terrain_id = room.get_cell_terrain(room_id, column, row)
-	if not terrain.is_passable(terrain_id) then
-		return nil
-	end
-	if room.get_cell_item(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_character(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_feature(room_id, column, row) ~= nil then
-		return nil
-	end
-	local item_id = item.create(item_type_id)
-	room.set_cell_item(room_id, column, row, item_id)
-	return item_id
-end
-local function place_feature(room_id, feature_type_id)
-	local column, row = math.random(1, room.get_cell_columns(room_id)), math.random(1, room.get_cell_rows(room_id))
-	local terrain_id = room.get_cell_terrain(room_id, column, row)
-	if not terrain.is_passable(terrain_id) then
-		return nil
-	end
-	if room.get_cell_item(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_character(room_id, column, row) ~= nil then
-		return nil
-	end
-	if room.get_cell_feature(room_id, column, row) ~= nil then
-		return nil
-	end
-	local feature_id = feature.create(feature_type_id)
-	room.set_cell_feature(room_id, column, row, feature_id)
-	return feature_id
-end
-local function place_items(room_id, item_type_id, count, predicate)
-	local result = {}
-	while count > 0 do
-		local item_id = place_item(room_id, item_type_id)
-		if item_id ~= nil then
-			table.insert(result, item_id)
-			count = count - 1
-			if predicate ~= nil then
-				predicate(item_id)
-			end
-		end
-	end
-	return result
-end
-local function place_features(room_id, feature_type_id, count, predicate)
-	local result = {}
-	while count > 0 do
-		local feature_id = place_feature(room_id, feature_type_id)
-		if feature_id ~= nil then
-			table.insert(result, feature_id)
-			count = count - 1
-			if predicate ~= nil then
-				predicate(feature_id)
-			end
-		end
-	end
-	return result
-end
 local function convert_character_item_type(character_id, item_type_from, item_type_to)
 	while character.has_item_type(character_id, item_type_from) do
 		character.remove_item_of_type(character_id, item_type_from)
@@ -199,7 +133,7 @@ feature_type.set_interact(
 					if item_id ~= nil then
 						local intensity = feature.change_statistic(feature_id, statistic_type.INTENSITY, 1)
 						if intensity > WASHING_MACHINE_MAXIMUM_INTENSITY then
-							place_items(character.get_room(character_id), item_type.SOILED_SHIRT, intensity, function(_) end)
+							rooms_utility.place_items(character.get_room(character_id), item_type.SOILED_SHIRT, intensity, function(_) end)
 							utility.show_message("You have overloaded the WASHING_MACHINE!\n\nAs a result, it has exploded, \n\nthrowing SOILED SHIRTS all about the room.")
 							feature.set_statistic(feature_id, statistic_type.INTENSITY, 0)
 							return
@@ -452,7 +386,7 @@ local function initialize_starting_room()
 	character.set_statistic(character_id, statistic_type.INVENTORY_SIZE, 16)
 	avatar.set_character(character_id)
 
-	local dirt_features = place_features(
+	local dirt_features = rooms_utility.place_features(
 		room_id,
 		feature_type.DIRT_PILE,
 		25,
@@ -492,7 +426,7 @@ local function initialize_second_room(starting_room_id)
 	local sign_feature_id = rooms_utility.create_room_feature(room_id, 3, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
 	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "Who left all of these DIRTY DISHES on the floor?\n\nWhy aren't there any TABLES in this room?\n\nSo many questions....")
 
-	place_items(
+	rooms_utility.place_items(
 		room_id,
 		item_type.DIRTY_DISH,
 		TOTAL_DISHES,
@@ -534,7 +468,7 @@ local function initialize_third_room(second_room_id)
 	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
 	rooms_utility.create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
 
-	place_items(
+	rooms_utility.place_items(
 		room_id,
 		item_type.SOILED_SHIRT,
 		TOTAL_CLOTHES,
