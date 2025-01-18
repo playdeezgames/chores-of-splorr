@@ -6,6 +6,10 @@ function M.create(feature_type_id)
     local feature_data = {}
     feature_data.feature_type_id = feature_type_id
     data[feature_id] = feature_data
+    local initializer = feature_type.get_initializer(feature_type_id)
+    if initializer ~= nil then
+        initializer(feature_id)
+    end
     return feature_id
 end
 function M.get_feature_type(feature_id)

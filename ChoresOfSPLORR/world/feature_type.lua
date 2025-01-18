@@ -89,4 +89,10 @@ end
 function M.set_do_move_handler(feature_type_id, do_move_handler)
     descriptors[feature_type_id].do_move_handler = do_move_handler
 end
+function M.get_initializer(feature_type_id)
+    return descriptors[feature_type_id].initializer
+end
+function M.set_initializer(feature_type_id, initializer)
+    descriptors[feature_type_id].initializer = initializer
+end
 return M
