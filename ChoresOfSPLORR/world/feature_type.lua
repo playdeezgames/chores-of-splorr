@@ -39,11 +39,11 @@ local descriptors = {
         success_sfx=sfx.WARDROBE
     },
     [M.WASHING_MACHINE] = {
-        tile = 16,
+        tile = 33,
         success_sfx=sfx.WASHING_MACHINE
     },
     [M.DRYER] = {
-        tile = 16,
+        tile = 49,
         success_sfx=sfx.DRYER
     },
     [M.SOAP_DISPENSER] = {
@@ -55,8 +55,15 @@ local descriptors = {
         success_sfx=sfx.FOLDING_TABLE
     }
 }
-function M.get_tile(feature_type_id)
-    return descriptors[feature_type_id].tile
+function M.get_tile(feature_type_id, feature_id, dt)
+    local tile = descriptors[feature_type_id].tile
+    if type(tile) == "function" then
+        return tile(feature_id, dt)
+    end
+    return tile
+end
+function M.set_tile(feature_type_id, tile)
+    descriptors[feature_type_id].tile = tile
 end
 function M.set_can_interact(feature_type_id, callback)
     descriptors[feature_type_id].can_interact = callback

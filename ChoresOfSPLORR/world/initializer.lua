@@ -142,6 +142,31 @@ feature_type.set_do_move_handler(
 			end
 		end
 	end)
+local WASHING_MACHINE_FRAME_TILES = {35, 36, 37, 38}
+feature_type.set_tile(
+	feature_type.WASHING_MACHINE, 
+	function(feature_id, dt)
+		local state = feature.get_metadata(feature_id, metadata_type.STATE)
+		if state == metadata_type.STATE_LOADING then
+			if feature.get_statistic(feature_id, statistic_type.INTENSITY) > 0 then
+				return 34
+			else
+				return 33
+			end
+		elseif state == metadata_type.STATE_WASHING then
+			local frame = feature.change_statistic(feature_id, statistic_type.FRAME, 1)
+			if frame > #WASHING_MACHINE_FRAME_TILES then
+				feature.set_statistic(feature_id, statistic_type.FRAME, 1)
+			end
+			return WASHING_MACHINE_FRAME_TILES[feature.get_statistic(feature_id, statistic_type.FRAME)]
+		elseif state == metadata_type.STATE_CLEAN then
+			if feature.get_statistic(feature_id, statistic_type.INTENSITY) > 0 then
+				return 34
+			else
+				return 33
+			end
+		end
+	end)
 feature_type.set_can_interact(
 	feature_type.WASHING_MACHINE,
 	function(feature_id, character_id, context)
@@ -231,6 +256,15 @@ feature_type.set_interact(
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 			end
 		end
+	end)
+feature_type.set_can_interact(
+	feature_type.DRYER, 
+	function(feature_id,character_id,context) 
+		return false 
+	end)
+feature_type.set_interact(
+	feature_type.DRYER, 
+	function(feature_id,character_id,context) 
 	end)
 feature_type.set_can_interact(
 	feature_type.SOAP_DISPENSER, 
@@ -500,8 +534,15 @@ local function initialize_third_room(second_room_id)
 	feature.set_metadata(washing_machine_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.INTENSITY, 0)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.TIMER, 0)
+	feature.set_statistic(washing_machine_feature_id, statistic_type.FRAME, 1)
+	
 
-	create_room_feature(room_id, 2, 3, feature_type.DRYER)
+	local dryer_feature_id = create_room_feature(room_id, 2, 3, feature_type.DRYER)
+	feature.set_metadata(dryer_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
+	feature.set_statistic(dryer_feature_id, statistic_type.INTENSITY, 0)
+	feature.set_statistic(dryer_feature_id, statistic_type.TIMER, 0)
+	feature.set_statistic(dryer_feature_id, statistic_type.FRAME, 1)
+
 	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
 	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)

@@ -54,7 +54,7 @@ end
 function final(self)
 end
 
-local function update_scene()
+local function update_scene(dt)
 	local avatar_character_id = avatar.get_character()
 	local room_id = character.get_room(avatar_character_id)
 	for column= 1, grimoire.BOARD_COLUMNS do
@@ -75,7 +75,7 @@ local function update_scene()
 			tile = 0
 			if feature_id ~= nil then
 				local feature_type_id = feature.get_feature_type(feature_id)
-				tile = feature_type.get_tile(feature_type_id)
+				tile = feature_type.get_tile(feature_type_id, feature_id, dt)
 			end
 			tilemap.set_tile(TILEMAP_URL, FEATURE_LAYER, column, row, tile)
 			tile = 0
@@ -125,7 +125,7 @@ local function update_score()
 end
 
 function update(self, dt)
-	update_scene()
+	update_scene(dt)
 	update_inventory()
 	update_moves()
 	update_score()
