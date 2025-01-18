@@ -105,6 +105,13 @@ local function place_features(room_id, feature_type_id, count, predicate)
 	end
 	return result
 end
+local function convert_character_item_type(character_id, item_type_from, item_type_to)
+	while character.has_item_type(character_id, item_type_from) do
+		character.remove_item_of_type(character_id, item_type_from)
+		character.add_item(character_id, item.create(item_type_to))
+	end
+end
+
 character_type.set_can_pick_up_item_handler(
 	character_type.HERO,
 	function(character_id, item_id)
@@ -114,7 +121,12 @@ character_type.set_can_pick_up_item_handler(
 		local item_type_id = item.get_item_type(item_id)
 		if item_type_id == item_type.SOILED_SHIRT then
 			if not character.has_item_type(character_id, item_type.LAUNDRY_BASKET) then
+				show_message("When dealing with laundry,\n\ntis best to use a LAUNDRY BASKET.")
 				return false
+			end
+			if character.has_item_type(character_id, item_type.WASHED_SHIRT) then
+				convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
+				show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
 			end
 		end
 		return true
@@ -145,8 +157,22 @@ feature_type.set_can_interact(
 				return true
 			end
 			show_message("This is a WASHING MACHINE.\n\nIt converts SOILED SHIRTS into clean WET SHIRTS,\n\nwith the help of SOAP.")
+			return false
 		elseif state == metadata_type.STATE_WASHING then
 			show_message("The WASHING MACHINE is busy\n\nmaking SOILED SHIRTS into clean WET SHIRTS.")
+			return false
+		elseif state == metadata_type.STATE_CLEAN then
+			local has_inventory_space = character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) > character.get_inventory_size(character_id)
+			if not has_inventory_space then
+				show_message("Yer inventory is full!")
+				return false
+			end
+			local has_laundry_basket = character.has_item_type(character_id, item_type.LAUNDRY_BASKET)
+			if not has_laundry_basket then
+				show_message("You need a LAUNDRY BASKET!")
+				return false
+			end
+			return true
 		end
 		return true
 	end)
@@ -181,6 +207,28 @@ feature_type.set_interact(
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_WASHING)
 				feature.set_statistic(feature_id, statistic_type.TIMER, 20)
 				return
+			end
+		elseif state == metadata_type.STATE_CLEAN then
+			local shirts_in_washer = feature.get_statistic(feature_id, statistic_type.INTENSITY) + 0
+			local available_inventory_space = character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) - character.get_inventory_size(character_id)
+			local shirts_to_remove = math.min(shirts_in_washer, available_inventory_space)
+			local has_soiled_shirts = character.has_item_type(character_id, item_type.SOILED_SHIRT)
+			while shirts_to_remove > 0 do
+				feature.change_statistic(feature_id, statistic_type.INTENSITY, -1)
+				shirts_in_washer = shirts_in_washer - 1
+				shirts_to_remove = shirts_to_remove - 1
+				local item_type_id = item_type.WASHED_SHIRT
+				if has_soiled_shirts then
+					item_type_id = item_type.SOILED_SHIRT
+				end
+				local item_id = item.create(item_type_id)
+				character.add_item(character_id, item_id)
+			end
+			if has_soiled_shirts then
+				show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith SOILED SHIRTS\n\nmade the WET SHIRTS soiled.")
+			end
+			if shirts_in_washer == 0 then
+				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 			end
 		end
 	end)
