@@ -14,6 +14,7 @@ local interaction_type = require("world.interaction_type")
 local metadata_type    = require("world.metadata_type")
 local sfx              = require("game.sfx")
 local utility = require "world.common.utility"
+local rooms_utility = require "world.rooms.utility"
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
@@ -24,16 +25,6 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
-local function create_room_item(room_id, column, row, item_type_id)
-	local item_id = item.create(item_type_id)
-	room.set_cell_item(room_id, column, row, item_id)
-	return item_id
-end
-local function create_room_feature(room_id, column, row, feature_type_id)
-	local feature_id = feature.create(feature_type_id)
-	room.set_cell_feature(room_id, column, row, feature_id)
-	return feature_id
-end
 local function place_item(room_id, item_type_id)
 	local column, row = math.random(2, room.get_cell_columns(room_id) - 1), math.random(2, room.get_cell_rows(room_id) - 1)
 	local terrain_id = room.get_cell_terrain(room_id, column, row)
@@ -448,10 +439,10 @@ local function initialize_starting_room()
 	room.set_cell_terrain(room_id, exit_column, exit_row, terrain.CLOSED_DOOR)
 	room.set_cell_lock_type(room_id, exit_column, exit_row, lock_type.COMMON)
 
-	create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
+	rooms_utility.create_room_item(room_id, grimoire.BOARD_CENTER_X - 1, grimoire.BOARD_CENTER_Y, item_type.BROOM)
 
-	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)
-	local sign_feature_id = create_room_feature(room_id, grimoire.BOARD_CENTER_X + 1, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
+	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.DUST_BIN)
+	local sign_feature_id = rooms_utility.create_room_feature(room_id, grimoire.BOARD_CENTER_X + 1, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
 	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "This is a sign. Yer reading it.\n\nYou might also try interacting with other objects.")
 
 	local character_id = character.create(character_type.HERO)
@@ -495,10 +486,10 @@ local function initialize_second_room(starting_room_id)
 	room.set_cell_teleport(starting_room_id, grimoire.BOARD_COLUMNS, grimoire.BOARD_CENTER_Y, room_id, 2, grimoire.BOARD_CENTER_Y)
 	room.set_cell_teleport(room_id, 1, grimoire.BOARD_CENTER_Y, starting_room_id, grimoire.BOARD_COLUMNS-1, grimoire.BOARD_CENTER_Y)
 
-	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
-	local cupboard_feature_id = create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
+	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.DISH_WASHER)
+	local cupboard_feature_id = rooms_utility.create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.CUPBOARD)
 	feature.set_statistic(cupboard_feature_id, statistic_type.DISHES_REMAINING, TOTAL_DISHES)
-	local sign_feature_id = create_room_feature(room_id, 3, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
+	local sign_feature_id = rooms_utility.create_room_feature(room_id, 3, grimoire.BOARD_CENTER_Y, feature_type.SIGN)
 	feature.set_metadata(sign_feature_id, metadata_type.MESSAGE, "Who left all of these DIRTY DISHES on the floor?\n\nWhy aren't there any TABLES in this room?\n\nSo many questions....")
 
 	place_items(
@@ -525,23 +516,23 @@ local function initialize_third_room(second_room_id)
 	room.set_cell_teleport(second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, room_id, grimoire.BOARD_CENTER_X, 2)
 	room.set_cell_teleport(room_id, grimoire.BOARD_CENTER_X, 1, second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS - 1)
 
-	local washing_machine_feature_id = create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
+	local washing_machine_feature_id = rooms_utility.create_room_feature(room_id, 2, 2, feature_type.WASHING_MACHINE)
 	feature.set_metadata(washing_machine_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.INTENSITY, 0)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.TIMER, 0)
 	feature.set_statistic(washing_machine_feature_id, statistic_type.FRAME, 1)
 	
 
-	local dryer_feature_id = create_room_feature(room_id, 2, 3, feature_type.DRYER)
+	local dryer_feature_id = rooms_utility.create_room_feature(room_id, 2, 3, feature_type.DRYER)
 	feature.set_metadata(dryer_feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
 	feature.set_statistic(dryer_feature_id, statistic_type.INTENSITY, 0)
 	feature.set_statistic(dryer_feature_id, statistic_type.TIMER, 0)
 	feature.set_statistic(dryer_feature_id, statistic_type.FRAME, 1)
 
-	create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
-	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
-	create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
-	create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
+	rooms_utility.create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
+	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
+	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
+	rooms_utility.create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
 
 	place_items(
 		room_id,
