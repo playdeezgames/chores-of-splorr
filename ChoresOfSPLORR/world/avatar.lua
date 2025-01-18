@@ -14,15 +14,12 @@ local data = {}
 
 local function move_avatar(delta_column, delta_row)
     local character_id = M.get_character()
+
     local room_id, column, row = character.get_room(character_id)
+    local next_room_id, next_column, next_row = room_id, column + delta_column, row + delta_row
+    local prev_room_id, prev_column, prev_row = room_id, column - delta_column, row - delta_row
 
-    local next_room_id = room_id
-    local next_column = column + delta_column
-    local next_row = row + delta_row
-    local prev_room_id = room_id
-    local prev_column = column - delta_column
-    local prev_row = row - delta_row
-
+    --Rules Regarding Terrain
     local terrain_id = room.get_cell_terrain(next_room_id, next_column, next_row)
     if not terrain.is_passable(terrain_id) then
         local lock_type_id = room.get_cell_lock_type(next_room_id, next_column, next_row)
@@ -48,6 +45,7 @@ local function move_avatar(delta_column, delta_row)
         return
     end
 
+    --Rules Regarding Items
     local item_id = room.get_cell_item(next_room_id, next_column, next_row)
     if item_id ~= nil then
         if character.can_pick_up_item(character_id, item_id) then
@@ -68,6 +66,7 @@ local function move_avatar(delta_column, delta_row)
         end
     end
 
+    --Rules Regarding PUSH Interactions With Features
     local feature_id = room.get_cell_feature(next_room_id, next_column, next_row)
     if feature_id ~= nil then
         local context = {room_id=next_room_id, column=next_column, row=next_row, delta_column = delta_column, delta_row=delta_row, interaction = interaction_type.PUSH}
@@ -80,12 +79,14 @@ local function move_avatar(delta_column, delta_row)
         return
     end
 
+    --Rules Regarding Other Characters
     local next_character_id = room.get_cell_character(next_room_id, next_column, next_row)
     if next_character_id ~= nil then
         --TODO: bump character sfx
         return
     end
 
+    --Rules Regarding Teleportation
     local teleport_room_id, teleport_column, teleport_row = room.get_cell_teleport(next_room_id, next_column, next_row)
     if teleport_room_id ~= nil then
         next_room_id = teleport_room_id
@@ -93,15 +94,18 @@ local function move_avatar(delta_column, delta_row)
         next_row = teleport_row
     end
 
+    --Actually Move the Character
     sfx.trigger(terrain.get_step_sfx(terrain_id))
     character.set_statistic(
-        character_id, 
-        statistic_type.MOVES, 
+        character_id,
+        statistic_type.MOVES,
         character.get_statistic(
-            character_id, 
+            character_id,
             statistic_type.MOVES) + 1)
     room.set_cell_character(room_id, column, row, nil)
     room.set_cell_character(next_room_id, next_column, next_row, character_id)
+
+    --Rules Regarding PULL Interactions With Features
     feature_id = room.get_cell_feature(prev_room_id, prev_column, prev_row)
     if feature_id ~= nil then
         local context = {room_id=prev_room_id, column=prev_column, row=prev_row, delta_column = delta_column, delta_row=delta_row, interaction=interaction_type.PULL}
@@ -112,10 +116,14 @@ local function move_avatar(delta_column, delta_row)
             sfx.trigger(feature.get_success_sfx(feature_id))
         end
     end
+
+    --Move Other Characters in the Room
     local other_characters = room.get_other_characters(room_id, character_id)
     for _, other_character_id in ipairs(other_characters) do
         character.do_move(other_character_id)
     end
+
+    --"Move" Features in the Room
     local current_features = room.get_all_features(room_id)
     for _, current_feature_id in ipairs(current_features) do
         feature.do_move(current_feature_id)
