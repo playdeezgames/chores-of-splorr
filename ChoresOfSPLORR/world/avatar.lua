@@ -12,14 +12,7 @@ local utility = require "world.common.utility"
 local M = {}
 local data = {}
 
-local function move_avatar(delta_column, delta_row)
-    local character_id = M.get_character()
-
-    local room_id, column, row = character.get_room(character_id)
-    local next_room_id, next_column, next_row = room_id, column + delta_column, row + delta_row
-    local prev_room_id, prev_column, prev_row = room_id, column - delta_column, row - delta_row
-
-    --Rules Regarding Terrain
+local function handle_terrain(character_id, next_room_id, next_column, next_row)
     local terrain_id = room.get_cell_terrain(next_room_id, next_column, next_row)
     if not terrain.is_passable(terrain_id) then
         local lock_type_id = room.get_cell_lock_type(next_room_id, next_column, next_row)
@@ -28,7 +21,7 @@ local function move_avatar(delta_column, delta_row)
             if not character.has_item_type(character_id, key_item_type_id) then
                 utility.show_message(lock_type.get_locked_message(lock_type_id))
                 sfx.trigger(lock_type.get_fail_sfx(lock_type_id))
-                return
+                return false
             else
                 if lock_type.destroys_key(lock_type_id) then
                     character.remove_item_of_type(character_id, key_item_type_id)
@@ -38,10 +31,25 @@ local function move_avatar(delta_column, delta_row)
                     room.set_cell_lock_type(next_room_id, next_column, next_row, nil)
                 end
                 sfx.trigger(lock_type.get_success_sfx(lock_type_id))
-                return
+                return false
             end
         end
         sfx.trigger(terrain.get_bump_sfx(terrain_id))
+        return false
+    end
+    return true, terrain_id
+end
+
+local function move_avatar(delta_column, delta_row)
+    local character_id = M.get_character()
+
+    local room_id, column, row = character.get_room(character_id)
+    local next_room_id, next_column, next_row = room_id, column + delta_column, row + delta_row
+    local prev_room_id, prev_column, prev_row = room_id, column - delta_column, row - delta_row
+
+    --Rules Regarding Terrain
+    local terrain_handled, terrain_id = handle_terrain(character_id, next_room_id, next_column, next_row)
+    if not terrain_handled then
         return
     end
 
