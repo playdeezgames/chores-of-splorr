@@ -9,6 +9,7 @@ require "world.features.SIGN"
 require "world.features.DUST_BIN"
 require "world.features.CUPBOARD"
 require "world.features.DISH_WASHER"
+require "world.features.FOLDING_TABLE"
 
 local starting_room = require "world.rooms.SWEEPING"
 local second_room = require "world.rooms.DISHES"
