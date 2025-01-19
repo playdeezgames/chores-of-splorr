@@ -14,10 +14,10 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 local WASHING_MACHINE_FRAME_TILES = {35, 36, 37, 38}
 
 feature_type.set_do_move_handler(
-	feature_type.WASHING_MACHINE, 
-	function(feature_id)	
+	feature_type.WASHING_MACHINE,
+	function(feature_id)
 		if feature.get_metadata(feature_id, metadata_type.STATE) == metadata_type.STATE_WASHING then
-			local timer = feature.change_statistic(feature_id, statistic_type.TIMER, -1)			
+			local timer = feature.change_statistic(feature_id, statistic_type.TIMER, -1)
 			if timer == 0 then
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_CLEAN)
 				--TODO: trigger sfx that washing machine is done.
@@ -25,7 +25,7 @@ feature_type.set_do_move_handler(
 		end
 	end)
 feature_type.set_tile(
-	feature_type.WASHING_MACHINE, 
+	feature_type.WASHING_MACHINE,
 	function(feature_id, dt)
 		local state = feature.get_metadata(feature_id, metadata_type.STATE)
 		if state == metadata_type.STATE_LOADING then
@@ -68,6 +68,7 @@ feature_type.set_can_interact(
 			utility.show_message("The WASHING MACHINE is busy\n\nmaking SOILED SHIRTS into clean WET SHIRTS.")
 			return false
 		elseif state == metadata_type.STATE_CLEAN then
+			--TODO: this is code duplicated in DRYER
 			local has_inventory_space = character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) > character.get_inventory_size(character_id)
 			if not has_inventory_space then
 				utility.show_message("Yer inventory is full!")
