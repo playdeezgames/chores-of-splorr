@@ -15,7 +15,7 @@ local metadata_type    = require("world.metadata_type")
 local sfx              = require("game.sfx")
 local utility = require "world.common.utility"
 local rooms_utility = require "world.rooms.utility"
-local characters_utility = require "world.characters.utility"
+require "world.characters.HERO"
 
 local DIRT_PILE_MAXIMUM_INTENSITY = 9
 local DIRT_PILE_SCORE_MULTIPLIER = 10
@@ -26,25 +26,6 @@ local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
 local M = {}
 math.randomseed(100000 * (socket.gettime() % 1))
 
-character_type.set_can_pick_up_item_handler(
-	character_type.HERO,
-	function(character_id, item_id)
-		if character.get_inventory_size(character_id) >= character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) then
-			return false
-		end
-		local item_type_id = item.get_item_type(item_id)
-		if item_type_id == item_type.SOILED_SHIRT then
-			if not character.has_item_type(character_id, item_type.LAUNDRY_BASKET) then
-				utility.show_message("When dealing with laundry,\n\ntis best to use a LAUNDRY BASKET.")
-				return false
-			end
-			if character.has_item_type(character_id, item_type.WASHED_SHIRT) then
-				characters_utility.convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
-				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
-			end
-		end
-		return true
-	end)
 feature_type.set_do_move_handler(
 	feature_type.WASHING_MACHINE, 
 	function(feature_id)	
