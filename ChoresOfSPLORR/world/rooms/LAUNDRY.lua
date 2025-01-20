@@ -40,9 +40,11 @@ function M.initialize_third_room(second_room_id)
 	feature.set_statistic(dryer_feature_id, statistic_type.TIMER, 0)
 	feature.set_statistic(dryer_feature_id, statistic_type.FRAME, 1)
 
+	local wardrobe_feature_id = rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
+	feature.set_statistic(wardrobe_feature_id, statistic_type.CLOTHES_REMAINING, TOTAL_CLOTHES)
+
 	rooms_utility.create_room_feature(room_id, 2, grimoire.BOARD_ROWS - 1, feature_type.FOLDING_TABLE)
 	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, 2, feature_type.SOAP_DISPENSER)
-	rooms_utility.create_room_feature(room_id, grimoire.BOARD_COLUMNS - 1, grimoire.BOARD_ROWS - 1, feature_type.WARDROBE)
 	rooms_utility.create_room_item(room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_CENTER_Y, item_type.LAUNDRY_BASKET)
 
 	rooms_utility.place_items(
