@@ -11,6 +11,7 @@ local item_type = require("world.item_type")
 local feature   = require("world.feature")
 local feature_type = require("world.feature_type")
 local statistic_type = require("world.statistic_type")
+local config = require("game.config")
 
 local TILEMAP_URL = "/scene#scene"
 local INVENTORY_URL = "/scene#inventory"

@@ -1,3 +1,4 @@
+local config = require "game.config"
 local M = {}
 M.BUMP = "BUMP"
 M.LOCKED = "LOCKED"
@@ -27,6 +28,8 @@ function M.trigger(sfx_id)
     if sfx_id == nil then
         return
     end
-    sound.play("/audio#"..sfx_id, {speed = 0.9 + math.random() * 0.2})
+    if not config.get_muted() then
+        sound.play("/audio#"..sfx_id, {speed = 0.9 + math.random() * 0.2})
+    end
 end
 return M
