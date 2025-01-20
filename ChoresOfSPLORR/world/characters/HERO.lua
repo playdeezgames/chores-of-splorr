@@ -23,6 +23,14 @@ character_type.set_can_pick_up_item_handler(
 				characters_utility.convert_character_item_type(character_id, item_type.WASHED_SHIRT, item_type.SOILED_SHIRT)
 				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith WET SHIRTS\n\nonly soiled the WET SHIRTS.")
 			end
+			if character.has_item_type(character_id, item_type.DRY_SHIRT) then
+				characters_utility.convert_character_item_type(character_id, item_type.DRY_SHIRT, item_type.SOILED_SHIRT)
+				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith DRY SHIRTS\n\nonly soiled the DRY SHIRTS.")
+			end
+			if character.has_item_type(character_id, item_type.FOLDED_SHIRT) then
+				characters_utility.convert_character_item_type(character_id, item_type.FOLDED_SHIRT, item_type.SOILED_SHIRT)
+				utility.show_message("Putting SOILED SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith FOLDED SHIRTS\n\nonly soiled the FOLDED SHIRTS.")
+			end
 		end
 		return true
 	end)

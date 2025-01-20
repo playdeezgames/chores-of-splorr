@@ -54,7 +54,7 @@ function M.initialize_third_room(second_room_id)
 		function(_) end)
 
 	--PUT AVATAR INTO ROOM FOR TESTING!
-	room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
+	--room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
 
 	return room_id
 end

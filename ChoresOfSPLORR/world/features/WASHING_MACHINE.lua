@@ -8,6 +8,7 @@ local utility = require("world.common.utility")
 local item_type = require("world.item_type")
 local rooms_utility = require("world.rooms.utility")
 local item = require("world.item")
+local characters_utility = require "world.characters.utility"
 local M = {}
 
 local WASHING_MACHINE_MAXIMUM_INTENSITY = 9
@@ -120,6 +121,8 @@ feature_type.set_interact(
 			local available_inventory_space = character.get_statistic(character_id, statistic_type.INVENTORY_SIZE) - character.get_inventory_size(character_id)
 			local shirts_to_remove = math.min(shirts_in_washer, available_inventory_space)
 			local has_soiled_shirts = character.has_item_type(character_id, item_type.SOILED_SHIRT)
+			local has_dry_shirts = character.has_item_type(character_id, item_type.DRY_SHIRT)
+			local has_folded_shirts = character.has_item_type(character_id, item_type.FOLDED_SHIRT)
 			while shirts_to_remove > 0 do
 				feature.change_statistic(feature_id, statistic_type.INTENSITY, -1)
 				shirts_in_washer = shirts_in_washer - 1
@@ -133,6 +136,12 @@ feature_type.set_interact(
 			end
 			if has_soiled_shirts then
 				utility.show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith SOILED SHIRTS\n\nmade the WET SHIRTS soiled.")
+			elseif has_dry_shirts then
+				utility.show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith DRY SHIRTS\n\nmade the DRY SHIRTS wet.")
+				characters_utility.convert_character_item_type(character_id, item_type.DRY_SHIRT, item_type.WASHED_SHIRT)
+			elseif has_folded_shirts then
+				utility.show_message("Putting WET SHIRTS\n\ninto a LAUNDRY BASKET\n\nwith FOLDED SHIRTS\n\nmade the FOLDED SHIRTS wet.")
+				characters_utility.convert_character_item_type(character_id, item_type.FOLDED_SHIRT, item_type.WASHED_SHIRT)
 			end
 			if shirts_in_washer == 0 then
 				feature.set_metadata(feature_id, metadata_type.STATE, metadata_type.STATE_LOADING)
