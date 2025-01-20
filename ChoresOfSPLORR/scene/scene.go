@@ -11,6 +11,10 @@ components {
   component: "/scene/scene_script.script"
 }
 components {
+  id: "debug_script"
+  component: "/debugger/debugger.script"
+}
+components {
   id: "inventory"
   component: "/scene/inventory.tilemap"
   position {
