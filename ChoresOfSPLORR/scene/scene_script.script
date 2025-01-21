@@ -11,7 +11,6 @@ local item_type = require("world.item_type")
 local feature   = require("world.feature")
 local feature_type = require("world.feature_type")
 local statistic_type = require("world.statistic_type")
-local config = require("game.config")
 
 local TILEMAP_URL = "/scene#scene"
 local INVENTORY_URL = "/scene#inventory"
@@ -145,6 +144,8 @@ function on_message(self, message_id, message, sender)
 		avatar.move_left()
 	elseif message_id == hash(grimoire.MSG_MOVE_RIGHT) and not modal_message then
 		avatar.move_right()
+	elseif message_id == hash(grimoire.MSG_RESTART) and not modal_message then
+		initializer.initialize()
 	end
 end
 

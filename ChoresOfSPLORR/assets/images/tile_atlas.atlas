@@ -1,13 +1,10 @@
 images {
-  image: "/assets/images/arrow-down.png"
+  image: "/assets/images/speaker-off.png"
 }
 images {
-  image: "/assets/images/arrow-left.png"
+  image: "/assets/images/speaker.png"
 }
 images {
-  image: "/assets/images/arrow-right.png"
-}
-images {
-  image: "/assets/images/arrow-up.png"
+  image: "/assets/images/anticlockwise-rotation.png"
 }
 extrude_borders: 2

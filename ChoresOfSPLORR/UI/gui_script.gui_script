@@ -1,8 +1,21 @@
 local grimoire = require("game.grimoire")
 local actions = require("game.actions")
+local config = require("game.config")
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
+end
+
+function update(self, dt)
+	local mute_node = gui.get_node("mute")
+	local unmute_node = gui.get_node("unmute")
+	if config.get_muted() then
+		gui.set_visible(unmute_node, true)
+		gui.set_visible(mute_node, false)
+	else
+		gui.set_visible(unmute_node, false)
+		gui.set_visible(mute_node, true)
+	end
 end
 
 function on_message(self, message_id, message, sender)
@@ -18,21 +31,15 @@ end
 
 function on_input(self, action_id, action)
 	local message_box_node = gui.get_node(grimoire.GUI_MESSAGE_BOX)
-	local up_arrow_node = gui.get_node(grimoire.GUI_UP_ARROW)
-	local down_arrow_node = gui.get_node(grimoire.GUI_DOWN_ARROW)
-	local left_arrow_node = gui.get_node(grimoire.GUI_LEFT_ARROW)
-	local right_arrow_node = gui.get_node(grimoire.GUI_RIGHT_ARROW)
+	local mute_node = gui.get_node("mute")
+	local restart_node = gui.get_node("restart")
 	if action_id == hash(actions.CLICK) and action.pressed then
 		if gui.pick_node(message_box_node, action.x, action.y) and gui.is_enabled(message_box_node) then
 			msg.post(grimoire.URL_SCENE, grimoire.MSG_HIDE_MESSAGE)
-		elseif gui.pick_node(up_arrow_node, action.x, action.y) then
-			msg.post(grimoire.URL_SCENE, grimoire.MSG_MOVE_UP)
-		elseif gui.pick_node(down_arrow_node, action.x, action.y) then
-			msg.post(grimoire.URL_SCENE, grimoire.MSG_MOVE_DOWN)
-		elseif gui.pick_node(left_arrow_node, action.x, action.y) then
-			msg.post(grimoire.URL_SCENE, grimoire.MSG_MOVE_LEFT)
-		elseif gui.pick_node(right_arrow_node, action.x, action.y) then
-			msg.post(grimoire.URL_SCENE, grimoire.MSG_MOVE_RIGHT)
+		elseif gui.pick_node(mute_node, action.x, action.y) then
+			config.set_muted(not config.get_muted())
+		elseif gui.pick_node(restart_node, action.x, action.y) then
+			msg.post(grimoire.URL_SCENE, grimoire.MSG_RESTART)
 		end
 	end
 end
