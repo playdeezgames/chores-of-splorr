@@ -1,13 +1,13 @@
 local grimoire = require("game.grimoire")
 local room = require("world.room")
 local terrain = require("world.terrain")
-local avatar = require("world.avatar")
 local item_type = require("world.item_type")
 local feature_type = require("world.feature_type")
 local feature = require("world.feature")
 local statistic_type = require("world.statistic_type")
 local metadata_type    = require("world.metadata_type")
 local rooms_utility = require "world.rooms.utility"
+local lock_type = require "world.lock_type"
 local M = {}
 
 local TOTAL_CLOTHES = 25
@@ -23,6 +23,10 @@ function M.initialize_third_room(second_room_id)
 			room.set_cell_terrain(room_id, column, row, terrain_id)
 		end
 	end
+
+	room.set_cell_terrain(room_id, 1, grimoire.BOARD_CENTER_Y, terrain.CLOSED_DOOR)
+	room.set_cell_lock_type(room_id, 1, grimoire.BOARD_CENTER_Y, lock_type.COMMON)
+
 	room.set_cell_terrain(room_id, grimoire.BOARD_CENTER_X, 1, terrain.OPEN_DOOR)
 	room.set_cell_teleport(second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS, room_id, grimoire.BOARD_CENTER_X, 2)
 	room.set_cell_teleport(room_id, grimoire.BOARD_CENTER_X, 1, second_room_id, grimoire.BOARD_CENTER_X, grimoire.BOARD_ROWS - 1)
@@ -52,9 +56,6 @@ function M.initialize_third_room(second_room_id)
 		item_type.SOILED_SHIRT,
 		TOTAL_CLOTHES,
 		function(_) end)
-
-	--PUT AVATAR INTO ROOM FOR TESTING!
-	--room.set_cell_character(room_id, grimoire.BOARD_CENTER_X, 2, avatar.get_character())
 
 	return room_id
 end
