@@ -8,6 +8,8 @@ You play as a cleaning lady. Sweep, wash the dishes, do the laundry. Thankless c
 
 **Description**
 
+**Latest version:** https://playdeezgames.github.io/chores-of-splorr/
+
 This is a game.
 
 That I wrote.
@@ -51,7 +53,7 @@ Font: DINOBYTE by mby, https://mby.itch.io/dinobyte, CC BY 4.0 (https://creative
 - The short description is 113 characters (itch.io allows 120).
 - The five lines from "This is a game." to "And that's not nothing." are the page's current text, kept as they are.
 - **AI disclosure, decided November 7, 2026:** the page is tagged `no-ai`, and its cover was swapped in January 2025 from an AI-art image (`ss/cover.png`) to a game screenshot (`ss/non_ai_cover.png`). The user decided to ship the AI-written port to this page, disclosed: on ship day remove the `no-ai` tag and set the AI disclosure to Yes (Code), with the "AI use" section above (as for Clumsy Oaf of SPLORR!!).
-- **GitHub Pages:** not live yet (needs the user's go-ahead to push and enable Pages; the repo is already public). When it is live, add at the top of the description: `**Latest version:** https://playdeezgames.github.io/chores-of-splorr/` and the same URL as an external link.
+- **GitHub Pages:** live since November 7, 2026 (https://playdeezgames.github.io/chores-of-splorr/, branch main, /docs), and on the portal. Keep the "Latest version" line; the edit page has no external-link field (as with Clumsy Oaf), so that line is the link.
 - **Ship day:** `./shippit.sh --push` creates the `html` channel (the 2025 build was uploaded by hand, so butler has no channel for this page). Then in the dashboard: delete the old Defold HTML5 upload (else the page has two builds), mark the new `html` upload "This file will be played in the browser", embed size 960 by 680 (the 960 by 640 canvas plus the footer; it scales down to fit). There are no Windows, macOS or Linux downloads to remove.
 - Upload `assets/cover.png` (a screenshot of the port's first room with the title, made by `tools/make_cover.py` from the game's own tiles and the DINOBYTE font; no new art) and the screenshots in `assets/screenshots/` (rendered from real game states by `tools/make_shots.sh`).
 - The icons look like game-icons.net's `speaker`, `speaker-off` and `anticlockwise-rotation` (by Delapouite on that site, as far as can be told from the names and style); the credit above is written to be right either way.
