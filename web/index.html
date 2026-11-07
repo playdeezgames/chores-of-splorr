@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Chores of SPLORR!!</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #777; overflow: hidden; font: 11px/1.4 sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  canvas {
+    flex: 0 0 auto;
+    width: min(100vw, calc((100vh - 6em) * 1.5));
+    aspect-ratio: 3 / 2;
+    image-rendering: pixelated;
+    touch-action: none;
+    outline: none;
+  }
+  footer { flex: 0 0 auto; margin: 4px 16px 6px; text-align: center; max-width: 90vw; }
+  footer a { color: #aaa; }
+</style>
+</head>
+<body>
+<canvas id="screen" width="480" height="320" tabindex="0"></canvas>
+<footer>
+  Chores of SPLORR!! by TheGrumpyGameDev (Defold, January 2025, for GlamJam 2025). Ported to Odin and WebAssembly in November 2026 by an AI agent (Claude Code) at the author's direction.
+  Move with the arrows, WASD or ZQSD, or tap the room; Space closes a message; M mutes.
+  Font: DINOBYTE by mby, CC BY 4.0, unmodified. Icons: game-icons.net, CC BY 3.0.
+  <a href="https://thegrumpygamedev.itch.io/">itch.io</a> · <a href="https://playdeezgames.github.io/oeuvre-of-splorr/">more games</a>
+</footer>
+<script src="odin.js"></script>
+<script>
+(function () {
+  "use strict";
+  const W = 480, H = 320, TILE = 12, GW = 6, GH = 8;
+  const SAVE_KEY = "chores-of-splorr:save";
+  const MUTE_KEY = "chores-of-splorr:muted";
+  // In the order of the Sfx enum in odin/world.odin (index 0 is None).
+  const SFX = ["", "BUMP", "LOCKED", "UNLOCK", "STEP", "PICK_UP_KEY", "PICK_UP_BROOM", "SWEEP", "NO_SWEEP",
+    "DUST_BUNNY_SUMMON", "DUST_BUNNY_TELEPORT", "GENERIC_FAIL", "DUST_BIN", "SIGN", "DUST_INTO_BIN",
+    "DISH_WASHER", "CUPBOARD", "DIRTY_DISH", "WARDROBE", "WASHING_MACHINE", "SOAP_DISPENSER",
+    "FOLDING_TABLE", "PICK_UP_LAUNDRY_BASKET", "DRYER"];
+  const ICONS = ["speaker.png", "speaker-off.png", "anticlockwise-rotation.png"];
+
+  const canvas = document.getElementById("screen");
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  const memory = new odin.WasmMemoryInterface();
+  const text = (ptr, len) => new TextDecoder().decode(new Uint8Array(memory.memory.buffer, ptr, len));
+
+  function loadImage(src) {
+    return new Promise((ok, fail) => { const i = new Image(); i.onload = () => ok(i); i.onerror = fail; i.src = src; });
+  }
+
+  let tiles = null, font = null, icons = [];
+  const tinted = new Map(); // colour -> the font sheet tinted that colour
+  function fontIn(color) {
+    let c = tinted.get(color);
+    if (!c) {
+      c = document.createElement("canvas");
+      c.width = font.width; c.height = font.height;
+      const x = c.getContext("2d");
+      x.drawImage(font, 0, 0);
+      x.globalCompositeOperation = "source-in";
+      x.fillStyle = "#" + color.toString(16).padStart(6, "0");
+      x.fillRect(0, 0, c.width, c.height);
+      tinted.set(color, c);
+    }
+    return c;
+  }
+
+  // Sound: Web Audio, unlocked by the first key or tap; each play is pitched 0.9 to 1.1 as in the original.
+  let audio = null;
+  const buffers = [];
+  function unlockAudio() {
+    if (audio) { if (audio.state === "suspended") audio.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    audio = new AC();
+    SFX.forEach((name, i) => {
+      if (!name) return;
+      fetch("sfx/" + name + ".wav").then((r) => r.arrayBuffer())
+        .then((b) => audio.decodeAudioData(b)).then((buf) => { buffers[i] = buf; }).catch(() => {});
+    });
+  }
+  function playSfx(i) {
+    if (!audio || !buffers[i]) return;
+    const src = audio.createBufferSource();
+    src.buffer = buffers[i];
+    src.playbackRate.value = 0.9 + Math.random() * 0.2;
+    src.connect(audio.destination);
+    src.start();
+  }
+
+  let muted = false;
+  try { muted = localStorage.getItem(MUTE_KEY) === "1"; } catch (e) {}
+
+  function toBase64(bytes) {
+    let s = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(s);
+  }
+
+  const imports = {
+    env: {
+      draw_rect: (x, y, w, h, color) => {
+        ctx.fillStyle = "#" + (color >>> 0).toString(16).padStart(6, "0");
+        ctx.fillRect(x, y, w, h);
+      },
+      draw_tile: (t, x, y) => {
+        const i = t - 1;
+        ctx.drawImage(tiles, (i % 16) * TILE, Math.floor(i / 16) * TILE, TILE, TILE, x, y, TILE, TILE);
+      },
+      draw_text: (ptr, len, x, y, color) => {
+        const s = text(ptr, len), sheet = fontIn(color >>> 0);
+        for (let k = 0; k < s.length; k++) {
+          const ch = s.charCodeAt(k) & 255;
+          if (ch !== 32) ctx.drawImage(sheet, (ch % 16) * GW, Math.floor(ch / 16) * GH, GW, GH, x + k * GW, y, GW, GH);
+        }
+      },
+      draw_icon: (id, x, y, w, h) => { if (icons[id]) ctx.drawImage(icons[id], x, y, w, h); },
+      play_sfx: playSfx,
+      now_ms: () => Date.now(),
+      storage_get: (ptr, cap) => {
+        try {
+          const v = localStorage.getItem(SAVE_KEY);
+          if (v === null) return -1;
+          const bin = atob(v);
+          if (bin.length > cap) return -1;
+          const out = new Uint8Array(memory.memory.buffer, ptr, bin.length);
+          for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+          return bin.length;
+        } catch (e) { return -1; }
+      },
+      storage_set: (ptr, len) => {
+        try { localStorage.setItem(SAVE_KEY, toBase64(new Uint8Array(memory.memory.buffer, ptr, len))); }
+        catch (e) { /* private window or full: play on without saving */ }
+      },
+      is_muted: () => muted,
+      toggle_mute: () => {
+        muted = !muted;
+        try { localStorage.setItem(MUTE_KEY, muted ? "1" : "0"); } catch (e) {}
+      },
+    },
+  };
+
+  // Keys as in the original's input bindings: arrows, WASD, and Z and Q for AZERTY keyboards.
+  const KEYS = { arrowup: 1, w: 1, z: 1, arrowdown: 2, s: 2, arrowleft: 3, a: 3, q: 3, arrowright: 4, d: 4,
+    " ": 5, enter: 5, escape: 5, m: 6 };
+  const ready = () => memory.exports && memory.exports.on_key;
+  window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = KEYS[e.key.toLowerCase()];
+    if (!k) return;
+    e.preventDefault();
+    unlockAudio();
+    if (e.repeat && k > 4) return; // held arrows walk, as in the original; held Space does not skip messages
+    if (ready()) memory.exports.on_key(k);
+  });
+  canvas.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    unlockAudio();
+    canvas.focus();
+    const r = canvas.getBoundingClientRect();
+    const x = Math.floor(((e.clientX - r.left) / r.width) * W);
+    const y = Math.floor(((e.clientY - r.top) / r.height) * H);
+    if (ready()) memory.exports.on_tap(x, y);
+  });
+
+  Promise.all([loadImage("tiles.png"), loadImage("dbyte_1x.png")].concat(ICONS.map(loadImage)))
+    .then((imgs) => {
+      [tiles, font, ...icons] = imgs;
+      odin.runWasm("game.wasm", null, imports, memory);
+    });
+  canvas.focus();
+})();
+</script>
+</body>
+</html>
