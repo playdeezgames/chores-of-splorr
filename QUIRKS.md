@@ -1,6 +1,6 @@
 # Quirks of the original, and what the port did with them
 
-The original is the Defold/Lua game in `ChoresOfSPLORR/` (GlamJam 2025, January 2025). The rule for ports (the user's, November 5, 2026): **fix quirks as we go and log them here**, keep the voice and the deliberate design. Each entry says what the original did and what the port does.
+The original is the Defold/Lua game formerly in `ChoresOfSPLORR/` (removed November 8, 2026; see git commit e85bf85) (GlamJam 2025, January 2025). The rule for ports (the user's, November 5, 2026): **fix quirks as we go and log them here**, keep the voice and the deliberate design. Each entry says what the original did and what the port does.
 
 ## Fixed
 
@@ -19,7 +19,7 @@ The original is the Defold/Lua game in `ChoresOfSPLORR/` (GlamJam 2025, January 
 
 ## Removed
 
-- The Defold debugger hook and the HTML5 fullscreen button. The Defold project stays in `ChoresOfSPLORR/` as the specification.
+- The Defold debugger hook and the HTML5 fullscreen button. The Defold project was the specification; it was removed from the repo on November 8, 2026 and is in git history at commit e85bf85.
 
 ## Kept on purpose
 

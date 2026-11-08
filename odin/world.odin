@@ -1,6 +1,6 @@
 package chores
 
-// The rules of Chores of SPLORR!!, ported from the Defold/Lua original in ChoresOfSPLORR/world.
+// The rules of Chores of SPLORR!!, ported from the Defold/Lua original (ChoresOfSPLORR/world, in git history at e85bf85).
 // Pure: no platform imports. Coordinates are 1-based with row 1 at the BOTTOM, as in the
 // original's tilemaps, so the room layouts and directions read the same as the Lua.
 // Everything in World is plain data (no pointers or slices), so a save is its bytes.

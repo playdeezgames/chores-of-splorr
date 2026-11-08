@@ -6,7 +6,7 @@ import pathlib, sys
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-IMG = ROOT / "ChoresOfSPLORR/assets/images"
+IMG = ROOT / "assets/images"
 TILES = Image.open(IMG / "costileset.png").convert("RGBA")
 FONT = Image.open(ROOT / "assets/dinobyte/dbyte_1x.png").convert("RGBA")
 ICONS = [Image.open(IMG / n).convert("RGBA") for n in ("speaker.png", "speaker-off.png", "anticlockwise-rotation.png")]
