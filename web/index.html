@@ -24,10 +24,23 @@
 <footer>
   Chores of SPLORR!! by TheGrumpyGameDev (Defold, January 2025, for GlamJam 2025). Ported to Odin and WebAssembly in November 2026 by an AI agent (Claude Code) at the author's direction.
   Move with the arrows, WASD or ZQSD, or tap the room; Space closes a message; M mutes.
-  Font: DINOBYTE by mby, CC BY 4.0, unmodified. Icons: game-icons.net, CC BY 3.0.
-  <a href="https://thegrumpygamedev.itch.io/">itch.io</a> · <a href="https://playdeezgames.github.io/oeuvre-of-splorr/">more games</a>
+  Font: DINOBYTE by mby, CC BY 4.0, unmodified. Icons: game-icons.net, CC BY 3.0. Feedback by LootLocker.
+  <a href="#" id="feedback-link">Send feedback (F)</a> · <a href="https://thegrumpygamedev.itch.io/">itch.io</a> · <a href="https://playdeezgames.github.io/oeuvre-of-splorr/">more games</a>
 </footer>
 <script src="odin.js"></script>
+<script src="lootlocker.js"></script>
+<script>
+// Feedback (the shared SPLORR!! LootLocker shim's form): reports go to the LootLocker console under
+// Feedback, Game (categories Bug, Idea, Other). LootLocker game "Chores of SPLORR!!" (console id 108575);
+// its CORS Allowlist has https://playdeezgames.github.io, https://html-classic.itch.zone and localhost:8000.
+const feedback = LootLocker({
+  domain: "https://5ton5erj.api.lootlocker.com",
+  key: "dev_cb742c9940cd4b8288aec014a5f317bb", // the public client key (Settings, API Keys, Game API), not a secret
+  version: "1.0.0",
+  idKey: "chores-of-splorr:ll-player",
+}).feedbackDialog({ game: "Chores of SPLORR!!" });
+document.getElementById("feedback-link").addEventListener("click", (e) => { e.preventDefault(); feedback.open(); });
+</script>
 <script>
 (function () {
   "use strict";
@@ -149,6 +162,7 @@
   const ready = () => memory.exports && memory.exports.on_key;
   window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key.toLowerCase() === "f" && !feedback.isOpen) { e.preventDefault(); feedback.open(); return; }
     const k = KEYS[e.key.toLowerCase()];
     if (!k) return;
     e.preventDefault();

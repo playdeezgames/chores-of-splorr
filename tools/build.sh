@@ -9,7 +9,7 @@ rm -rf build/web
 mkdir -p build/web/sfx
 "$ODIN" build odin -target:js_wasm32 -out:build/web/game.wasm -o:$opt -vet-unused -vet-shadowing
 cp "$("$ODIN" root)/core/sys/wasm/js/odin.js" build/web/
-cp web/index.html build/web/
+cp web/index.html web/lootlocker.js build/web/
 # The original's art and sounds, used as they are.
 img=assets/images
 cp "$img/costileset.png" build/web/tiles.png
